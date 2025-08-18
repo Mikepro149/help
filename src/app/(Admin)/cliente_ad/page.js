@@ -62,13 +62,12 @@ const columns = [
     cell: ({ row }) => (
       <Button
         size="sm"
-        className="bg-green-600 text-white hover:bg-green-700"
+        className="bg-gray-200 text-gray-800 hover:bg-gray-300 px-2 py-1 rounded-md text-sm min-w-[32px] h-[32px] flex items-center justify-center"
         onClick={() => {
-          window.location.href = `/cliente_ad/${row.original.id}`;
+          window.location.href = `/cliente_ad/empresa`;
         }}
       >
-        <Plus className="w-4 h-4 mr-1" />
-        Agregar
+        <Plus className="w-4 h-4" />
       </Button>
     ),
   },
@@ -100,34 +99,48 @@ function DataTableDemo() {
   })
 
   return (
-    <div className="w-full">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id}>
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <div className="w-full overflow-hidden font-[Poppins]">
+      <div className="overflow-x-auto border border-gray-300 rounded-lg bg-white">
+        <Table className="min-w-[800px] text-center bg-white">
+          <TableHeader className="sticky top-0 z-10 bg-orange-300">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className="border-b border-gray-300">
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="px-4 py-3 font-semibold text-gray-700 whitespace-nowrap"
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map((row, index) => (
+              <TableRow
+                key={row.id}
+                className={`transition-colors ${
+                  index % 2 === 0 ? 'bg-white' : 'bg-gray-100'
+                } hover:bg-blue-100`}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    className="px-4 py-3 border-b border-gray-300 text-sm overflow-hidden text-ellipsis whitespace-nowrap min-w-[100px]"
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   )
 }
+
 
 export default function Clientes() {
   return (
