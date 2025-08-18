@@ -45,6 +45,8 @@ export default function DatosAcceso() {
     router.push('/cliente_ad/resumen'); // Ajusta la ruta según tu flujo
   };
 
+  const stepActual = 2; // índice del paso activo "Sucursal"
+
   return (
     <div style={{
       width: '700px',
@@ -52,16 +54,48 @@ export default function DatosAcceso() {
       backgroundColor: '#fff3e0',
       padding: '30px',
       borderRadius: '12px',
-      fontFamily: 'Arial, sans-serif'
+      fontFamily: 'Arial, sans-serif',
+      textAlign: 'center'  // centra todo el contenido
     }}>
+      {/* Título */}
       <h2 style={{
-        textAlign: 'center',
         fontWeight: 'bold',
-        marginBottom: '20px',
-        fontSize: '24px'
-      }}>Registrar Cliente - Datos de Acceso</h2>
+        marginBottom: '15px',
+        fontSize: '24px',
+        color: 'black'
+      }}>
+        Registrar Cliente
+      </h2>
 
-      <form>
+      {/* Barra de pasos */}
+      <div style={{ 
+        display: 'inline-flex', 
+        justifyContent: 'center', 
+        gap: '10px', 
+        backgroundColor: '#fff3e0', 
+        padding: '10px 0', 
+        borderRadius: '8px'
+      }}>
+        {steps.map((step, index) => (
+          <button
+            key={index}
+            style={{
+              padding: '10px 20px',
+              borderRadius: '8px',
+              border: 'none',
+              cursor: 'default',
+              backgroundColor: index === stepActual ? 'orange' : '#eee',
+              color: index === stepActual ? 'white' : 'black',
+              fontWeight: index === stepActual ? 'bold' : 'normal',
+            }}
+          >
+            {step}
+          </button>
+        ))}
+      </div>
+
+      {/* Formulario */}
+      <form style={{ marginTop: '30px', textAlign: 'left' }}>
         <div style={{ marginBottom: '15px' }}>
           <label>Correo electrónico:</label><br />
           <input
