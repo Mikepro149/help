@@ -6,11 +6,11 @@ import { FaHome, FaTicketAlt, FaUsers, FaBoxOpen, FaClipboardList, FaUserCircle,
 
 
 const sections = [
-	{ name: "Home", href: "/inicio", icon: <FaHome style={{ marginRight: 12 }} /> },
-	{ name: "Tickets", href: "/tickets", icon: <FaTicketAlt style={{ marginRight: 12 }} /> },
-	{ name: "Clientes", href: "/clientes", icon: <FaUsers style={{ marginRight: 12 }} /> },
-	{ name: "Productos", href: "/productos", icon: <FaBoxOpen style={{ marginRight: 12 }} /> },
-	{ name: "Plan de Soporte", href: "/planSoporte", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
+	{ name: "Home", href: "/inicio_ad", icon: <FaHome style={{ marginRight: 12 }} /> },
+	{ name: "Tickets", href: "/boletos_ad", icon: <FaTicketAlt style={{ marginRight: 12 }} /> },
+	{ name: "Clientes", href: "/cliente_ad", icon: <FaUsers style={{ marginRight: 12 }} /> },
+	{ name: "Productos", href: "/productos_ad", icon: <FaBoxOpen style={{ marginRight: 12 }} /> },
+	{ name: "Plan de Soporte", href: "/planSoporte_ad", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
 ];
 
 const Sidebar = ({ onProfile, onLogout }) => {

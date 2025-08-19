@@ -21,11 +21,20 @@ export default function Login() {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Usuario: ${email}, Contraseña: ${password}, Recordar: ${remember}`);
-    router.push("/sidebar");
-  };
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  // Simulación de validación básica (puedes reemplazar esto por un fetch a una API si es necesario)
+  if (email === "admin" && password === "123") {
+    router.push("/inicio_ad"); // o la ruta que quieras para el admin
+  } else if (email === "ti" && password === "123") {
+    router.push("/inicio_ti"); // o la ruta para el usuario normal
+  } else if (email === "situ" && password === "123"){
+    router.push("/inicio_situ");
+  } else {
+    alert("Credenciales incorrectas. Intenta de nuevo.");
+  }
+};
 
 
   return (
@@ -43,7 +52,7 @@ export default function Login() {
               Usuario (Correo electronico)
             </label>
             <input
-              type="email"
+              type="text"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
