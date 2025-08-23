@@ -22,6 +22,7 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         login: "bg-[#f89e1b] text-white border-none p-3 rounded-full cursor-pointer font-bold text-lg w-full mb-4 hover:bg-[#e68e0a] transition-all",
       
+        
 
       },
       size: {

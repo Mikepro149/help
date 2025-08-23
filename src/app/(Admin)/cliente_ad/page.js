@@ -64,7 +64,7 @@ const columns = [
         size="sm"
         className="bg-gray-200 text-gray-800 hover:bg-gray-300 px-2 py-1 rounded-md text-sm min-w-[32px] h-[32px] flex items-center justify-center"
         onClick={() => {
-          window.location.href = `/cliente_ad/empresa`;
+          window.location.href = `/cliente_ad/registro_empresa`;
         }}
       >
         <Plus className="w-4 h-4" />
