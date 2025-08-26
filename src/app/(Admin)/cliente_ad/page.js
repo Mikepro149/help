@@ -64,7 +64,7 @@ const columns = [
         size="sm"
         className="bg-gray-200 text-gray-800 hover:bg-gray-300 px-2 py-1 rounded-md text-sm min-w-[32px] h-[32px] flex items-center justify-center"
         onClick={() => {
-          window.location.href = `/cliente_ad/registro_empresa`;
+          window.location.href = `/cliente_ad/persona_ad`;
         }}
       >
         <Plus className="w-4 h-4" />
@@ -145,7 +145,28 @@ function DataTableDemo() {
 export default function Clientes() {
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold mb-4">Clientes</h1>
+      {/* Container superior */}
+      <div style={{
+        maxWidth: "1200px",
+        margin: "0 auto",
+        padding: "30px 20px 0 20px",
+        background: "#fff",
+        borderRadius: "16px",
+        boxShadow: "0 2px 8px #0001",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        marginBottom: "30px"
+      }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span style={{ fontSize: "32px", marginRight: "15px" }}>🏠</span>
+          <span style={{ fontSize: "24px", fontWeight: "bold" }}>Clientes</span>
+        </div>
+        <div style={{ textAlign: "right", fontSize: "16px", color: "#333" }}>
+          <span style={{ fontWeight: "bold" }}>Empresa</span> | Juan Pérez &nbsp;
+          <span style={{ color: "#888" }}>Cargo: Administrador</span>
+        </div>
+      </div>
       <DataTableDemo />
     </div>
   )

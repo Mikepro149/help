@@ -33,7 +33,7 @@ const Sidebar_ti = ({ onProfile, onLogout }) => {
                     width: 300,
                     height: 250,
                     background: "#FF9500",
-                    margin: "32px 0 24px 0",
+                    margin: "0px 0 24px 0",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
