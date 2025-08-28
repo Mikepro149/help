@@ -15,11 +15,11 @@ export default function InicioAdmin() {
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        minHeight: "100px" 
+        minHeight: "50px" 
       }}>
         {/* Contenedor principal con Flexbox */}
-        <div style={{ display: "flex", alignItems: "left" }}>
-          <FaHome size={32} color="#000" style={{ marginRight: "10px" }} />
+        <div style={{ display: "flex", alignItems: "center", padding:"5px"}}>
+          <FaHome size={64} color="#000" style={{ marginRight: "10px", display:"flex", marginBottom:"10px"}} />
           <span style={{ fontSize: "24px", fontWeight: "bold" }}>Inicio</span>
         </div>
 
@@ -52,12 +52,13 @@ export default function InicioAdmin() {
       
       {/* Cartas */}
       <div style={{
-        maxWidth: "1200px",
+        maxWidth: "1400px",
         margin: "30px auto 0 auto",
         display: "flex",
         flexWrap: "wrap",
         justifyContent: "center",
-        gap: "30px"
+        gap: "50px",
+        minHeight: "250px"
       }}>
         {[
           { icon: <FaTicketAlt size={48} color="#000" />, title: "Total de tickets activos", value: 10 },
@@ -68,8 +69,8 @@ export default function InicioAdmin() {
           <div key={idx} style={{
             background: "#FFB966",
             borderRadius: "15px",
-            width: "250px", // Aumentado de 210px a 250px
-            height: "200px", // Aumentado de 170px a 200px
+            width: "300px", // Aumentado de 210px a 250px
+            height: "250px", // Aumentado de 170px a 200px
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
