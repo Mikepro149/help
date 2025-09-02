@@ -52,7 +52,7 @@ export default function InicioAdmin() {
       
       {/* Cartas */}
       <div style={{
-        maxWidth: "1400px",
+        maxWidth: "900px",
         margin: "30px auto 0 auto",
         display: "flex",
         flexWrap: "wrap",
@@ -96,53 +96,11 @@ export default function InicioAdmin() {
           </div>
         ))}
       </div>
-      {/*
-      <div style={{
-        maxWidth: "1200px",
-        margin: "30px auto 0 auto",
-        display: "flex",
-        justifyContent: "center",
-        gap: "30px"
-      }}>
-        {[
-          { icon: "🔒", title: "Total de ticket activos" },
-          { icon: "📄", title: "Historial de tickets" },
-          { icon: "⚠️", title: "Tickets Urgentes" },
-          { icon: "👤", title: "Registrar Clientes" },
-        ].map((card, idx) => (
-          <div key={idx} style={{
-            background: "#FFB966",
-            borderRadius: "15px",
-            width: "210px",
-            height: "170px",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 2px 8px #0001"
-          }}>
-            <div style={{ fontSize: "38px", marginBottom: "10px" }}>{card.icon}</div>
-            <div style={{ fontWeight: "bold", fontSize: "18px", marginBottom: "18px", textAlign: "center" }}>{card.title}</div>
-            <button style={{
-              background: "#fff",
-              color: "#FFB966",
-              border: "none",
-              borderRadius: "7px",
-              padding: "7px 25px",
-              fontWeight: "bold",
-              cursor: "pointer",
-              fontSize: "16px",
-              boxShadow: "0 1px 4px #0001"
-            }}>Ver</button>
-          </div>
-        ))}
-      </div>
-      */}
 
       {/* Mensajes de tickets */}
       <div style={{
         maxWidth: "450px", // Hacemos el contenedor más estrecho
-        margin: "200px auto 0", //Configurar de acuerdo a la ventana
+        margin: "10px auto 0", //Configurar de acuerdo a la ventana
         background: "#fff",
         borderRadius: "12px",
         boxShadow: "0 2px 8px #0001",

@@ -12,12 +12,10 @@ import {
 
 import { Ticket, Search } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
-
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
-
 import {
   Popover,
   PopoverContent,
@@ -130,46 +128,14 @@ function ComboboxDemo() {
 // COLUMNS
 // ---------------------
 const columns = [
-  {
-    accessorKey: "id",
-    header: "Id",
-    cell: ({ row }) => <div>{row.getValue("id")}</div>,
-  },
-  {
-    accessorKey: "pin",
-    header: "Pin",
-    cell: ({ row }) => <div>{row.getValue("pin")}</div>,
-  },
-  {
-    accessorKey: "ticket",
-    header: "Ticket",
-    cell: ({ row }) => <div>{row.getValue("ticket")}</div>,
-  },
-  {
-    accessorKey: "incidente",
-    header: "Tipo de incidente",
-    cell: ({ row }) => <div>{row.getValue("incidente")}</div>,
-  },
-  {
-    accessorKey: "usuario",
-    header: "Usuario",
-    cell: ({ row }) => <div>{row.getValue("usuario")}</div>,
-  },
-  {
-    accessorKey: "empresa",
-    header: "Empresa",
-    cell: ({ row }) => <div>{row.getValue("empresa")}</div>,
-  },
-  {
-    accessorKey: "area",
-    header: "Area",
-    cell: ({ row }) => <div>{row.getValue("area")}</div>,
-  },
-  {
-    accessorKey: "sucursal",
-    header: "Sucursal",
-    cell: ({ row }) => <div>{row.getValue("sucursal")}</div>,
-  },
+  { accessorKey: "id", header: "Id" },
+  { accessorKey: "pin", header: "Pin" },
+  { accessorKey: "ticket", header: "Ticket" },
+  { accessorKey: "incidente", header: "Tipo de incidente" },
+  { accessorKey: "usuario", header: "Usuario" },
+  { accessorKey: "empresa", header: "Empresa" },
+  { accessorKey: "area", header: "Area" },
+  { accessorKey: "sucursal", header: "Sucursal" },
   {
     accessorKey: "estado",
     header: "Estado",
@@ -191,17 +157,11 @@ const columns = [
       )
     },
   },
+  { accessorKey: "fecha", header: "Fecha de Reg." },
   {
-    accessorKey: "fecha",
-    header: "Fecha de Reg.",
-    cell: ({ row }) => <span className="capitalize">{row.getValue("fecha")}</span>,
-  },
-    {
     accessorKey: "prioridad",
-    header:"Prioridad",
-    cell: () => (
-      <ArrowUp className="h-5 w-5 text-red-600" />
-    ),
+    header: "Prioridad",
+    cell: () => <ArrowUp className="h-5 w-5 text-red-600" />,
   },
   {
     accessorKey: "chat",
@@ -253,32 +213,46 @@ export default function Page() {
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
+    state: { sorting, columnFilters, columnVisibility, rowSelection },
   })
 
   return (
-    <div className="w-full">
-      {/* Header */}
-      <div className="w-full flex items-center justify-between px-6 py-4 border-b">
-        <div className="flex items-center gap-2">
-          <Ticket className="h-6 w-6 text-blue-600" />
-          <span className="text-xl font-semibold">Tickets Activos</span>
-        </div>
-        <div className="flex flex-col text-right">
-          <span className="text-sm font-medium text-gray-700">
-            Usuario: Alberto Pérez
+    <div
+      style={{
+        background: "#f7f7f7",
+        minHeight: "100vh",
+        fontFamily: "Poppins, sans-serif",
+      }}
+    >
+      {/* Header estilo boletos_ad */}
+      <div
+        style={{
+          maxWidth: "1200px",
+          margin: "0 auto",
+          padding: "30px 20px 0 20px",
+          background: "#fff",
+          borderRadius: "16px",
+          boxShadow: "0 2px 8px #0001",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginBottom: "30px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <span style={{ fontSize: "32px", marginRight: "15px" }}>🎫</span>
+          <span style={{ fontSize: "24px", fontWeight: "bold" }}>
+            Tickets Activos
           </span>
-          <span className="text-xs text-gray-500">Soporte Técnico</span>
+        </div>
+        <div style={{ textAlign: "right", fontSize: "16px", color: "#333" }}>
+          <span style={{ fontWeight: "bold" }}>Usuario</span> | Alberto Pérez &nbsp;
+          <span style={{ color: "#888" }}>Cargo: Soporte Técnico</span>
         </div>
       </div>
 
       {/* Filtros */}
-      <div className="flex items-center gap-4 py-4 px-6">
+      <div className="flex items-center gap-4 py-4 px-6 max-w-[1200px] mx-auto">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
           <Input
@@ -293,8 +267,10 @@ export default function Page() {
         <ComboboxDemo />
       </div>
 
-      {/* ✅ Tabla desde componente */}
-      <TableCn columns={columns} data={data} />
+      {/* ✅ Tabla */}
+      <div className="px-6 max-w-[1200px] mx-auto">
+        <TableCn columns={columns} data={data} />
+      </div>
     </div>
   )
 }

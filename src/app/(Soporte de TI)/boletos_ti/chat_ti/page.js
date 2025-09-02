@@ -3,26 +3,43 @@
 import React from "react";
 import { Ticket } from "lucide-react"; // 👈 icono
 import { Input } from "@/components/ui/input"; // 👈 tu input de shadcn
+import { FaEnvelope } from 'react-icons/fa';
+import { TextareaCn } from "@/components/shared/textareacn";
+
+import { useState } from "react";
 
 export default function TicketCard() {
+
+  const [text, setText] = useState("");
+
   return (
     <div className="bg-gray-100 min-h-screen overflow-hidden flex flex-col">
       {/* ✅ Header fuera y expandido */}
       <header className="w-full flex items-center justify-between px-6 py-4 border-b bg-white shadow-sm">
-        <div className="flex items-center gap-2">
-          <Ticket className="h-6 w-6 text-blue-600" />
-          <span className="text-xl font-semibold">Tickets Activos</span>
-        </div>
-        <div className="flex flex-col text-right">
-          <span className="text-sm font-medium text-gray-700">
-            Usuario: Alberto Pérez
-          </span>
-          <span className="text-xs text-gray-500">Soporte Técnico</span>
-        </div>
+
+              {/* Contenedor principal con Flexbox */}
+              <div style={{ display: "flex", alignItems: "center", padding:"5px"}}>
+                <FaEnvelope size={64} color="#000" style={{ marginRight: "10px", display:"flex", marginBottom:"10px"}} />
+                <span style={{ fontSize: "24px", fontWeight: "bold" }}>Chat</span>
+              </div>
+      
+              {/* Contenedor Derecho: Empresa y Usuario */}
+              <div style={{ display: "flex", alignItems: "center" }}>
+                {/* Nombre de la empresa */}
+                <span style={{ fontSize: "16px", color: "#555", fontWeight: "500", marginRight: "25px" }}>
+                  J&P PERIFERICOS S.A.C.
+                </span>
+      
+                {/* Información del usuario */}
+                
+              </div>
+   
       </header>
+      
 
       {/* ✅ Card debajo del header */}
       <main className="flex-1 p-6">
+        <div className="flex gap-6 flex-wrap">
         <div className="w-[500px] max-w-[95vw] max-h-[95vh] overflow-hidden border rounded-lg shadow-md bg-white p-6">
           {/* Encabezado Ticket */}
           <div className="flex justify-between items-start border-b pb-4 mb-4">
@@ -84,7 +101,22 @@ export default function TicketCard() {
             </button>
           </div>
         </div>
+         {/* Textarea a la derecha */}
+        <div className="flex-1 min-w-[300px]">
+          <div className="bg-[#d4efff] p-4">
+            <div className="mb-2">
+              <span className="text-black">Mensaje:</span>
+            </div>
+            <TextareaCn
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Escribe algo..."
+            />
+          </div>
+        </div>
+        </div>
       </main>
+
     </div>
   );
 }

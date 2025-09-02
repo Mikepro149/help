@@ -7,9 +7,9 @@ import React from "react";
 export default function AdminLayout({ children }) {
   return (
     <SidebarProvider>
-      <div className="flex h-screen">
+      <div className="flex h-screen -flex w-screen">
         <Sidebar_ti />
-        <main className="flex-1 p-6 bg-gray-100 overflow-auto">
+        <main className="flex-1 p-6 bg-gray-100">
           {children}
         </main>
       </div>
