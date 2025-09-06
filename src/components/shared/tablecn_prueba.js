@@ -10,6 +10,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
 export default function TicketsTable({ data, columns }) {
   const [sorting, setSorting] = React.useState([])
   const [columnFilters, setColumnFilters] = React.useState([])
@@ -31,94 +40,58 @@ export default function TicketsTable({ data, columns }) {
   })
 
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        overflow: "hidden",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-      }}
-    >
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          fontSize: "14px",
-          fontFamily: "Arial, sans-serif",
-        }}
-      >
+    <div className="rounded-lg border border-gray-200 shadow-md">
+      <Table className="w-full border-collapse text-sm">
         {/* --- Encabezado --- */}
-        <thead style={{ backgroundColor: "#d6d6d6" }}>
+        <TableHeader className="bg-gray-100">
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} style={{ borderBottom: "1px solid #ccc" }}>
+            <TableRow key={headerGroup.id} className="border-b">
               {headerGroup.headers.map((header) => (
-                <th
+                <TableHead
                   key={header.id}
-                  style={{
-                    padding: "10px",
-                    textAlign: "center", // ✅ centrado
-                    fontWeight: "600",
-                    color: "#111",
-                  }}
+                  className="px-4 py-3 text-left font-semibold text-gray-700"
                 >
                   {header.isPlaceholder
                     ? null
                     : flexRender(header.column.columnDef.header, header.getContext())}
-                </th>
+                </TableHead>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </thead>
+        </TableHeader>
 
         {/* --- Cuerpo --- */}
-        <tbody>
+        <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row, i) => (
-              <tr
+              <TableRow
                 key={row.id}
-                style={{
-                  backgroundColor: i % 2 === 0 ? "#fff" : "#f2f2f2", // ✅ pares gris claro
-                  borderBottom: "1px solid #eee",
-                  cursor: "pointer",
-                }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#e9e9e9")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor =
-                    i % 2 === 0 ? "#fff" : "#f2f2f2")
-                }
+                className={`${
+                  i % 2 === 0 ? "bg-gray-50" : "bg-white"
+                } hover:bg-gray-100 border-b`}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <td
+                  <TableCell
                     key={cell.id}
-                    style={{
-                      padding: "8px 10px",
-                      color: "#333",
-                      textAlign: "center", // ✅ centrado
-                    }}
+                    className="px-4 py-2 text-gray-700"
                   >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
+                  </TableCell>
                 ))}
-              </tr>
+              </TableRow>
             ))
           ) : (
-            <tr>
-              <td
+            <TableRow>
+              <TableCell
                 colSpan={columns.length}
-                style={{
-                  textAlign: "center",
-                  padding: "20px",
-                  color: "#777",
-                }}
+                className="text-center py-6 text-gray-500"
               >
                 Sin datos
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   )
 }

@@ -1,48 +1,20 @@
 "use client"
 
-import * as React from "react"
-import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-
-import { Ticket, Search } from "lucide-react"
+import { Search, Mail, ArrowUp } from "lucide-react"
+import Link from "next/link"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
-import Link from "next/link"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command"
-import { Check, ChevronsUpDown, Mail, ArrowUp } from "lucide-react"
+import TicketsTable from "@/components/shared/tablecn1_prueba"
 
-// ✅ Importar la tabla adaptada
-import TableCn from "@/components/shared/tablecn1_prueba"
-
-// ---------------------
-// DATA DEMO
-// ---------------------
+// -----------------
+// DATA
+// -----------------
 const data = [
   {
     id: "1",
     ticket: "wbndjhdfjk",
     pin: "12345",
-    incidente: "asjkajs",
+    incidente: "Error en sistema",
     usuario: "Alberto Perez",
     empresa: "A",
     area: "TI",
@@ -52,81 +24,21 @@ const data = [
   },
   {
     id: "2",
-    ticket: "wbndjhdfjk",
-    pin: "12345",
-    incidente: "asjkajs2",
-    usuario: "Alberto Perez",
-    empresa: "A",
-    area: "TI",
-    sucursal: "Independencia",
+    ticket: "asdasdasd",
+    pin: "67890",
+    incidente: "Falla de red",
+    usuario: "María López",
+    empresa: "B",
+    area: "Ventas",
+    sucursal: "San Isidro",
     estado: "Inactivo",
-    fecha: "04 Ago 2024",
+    fecha: "05 Ago 2024",
   },
 ]
 
-// ---------------------
-// COMBOBOX
-// ---------------------
-const frameworks = [
-  { value: "area1", label: "Area 1" },
-  { value: "area2", label: "Area 2" },
-  { value: "area3", label: "Area 3" },
-]
-
-function ComboboxDemo() {
-  const [open, setOpen] = React.useState(false)
-  const [value, setValue] = React.useState("")
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          role="combobox"
-          aria-expanded={open}
-          className="w-[200px] justify-between"
-        >
-          {value
-            ? frameworks.find((framework) => framework.value === value)?.label
-            : "Seleccionar tipo..."}
-          <ChevronsUpDown className="opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
-        <Command>
-          <CommandInput placeholder="Buscar..." className="h-9" />
-          <CommandList>
-            <CommandEmpty>No encontrado.</CommandEmpty>
-            <CommandGroup>
-              {frameworks.map((framework) => (
-                <CommandItem
-                  key={framework.value}
-                  value={framework.value}
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
-                    setOpen(false)
-                  }}
-                >
-                  {framework.label}
-                  <Check
-                    className={cn(
-                      "ml-auto",
-                      value === framework.value ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  )
-}
-
-// ---------------------
+// -----------------
 // COLUMNS
-// ---------------------
+// -----------------
 const columns = [
   { accessorKey: "id", header: "Id" },
   { accessorKey: "pin", header: "Pin" },
@@ -134,7 +46,7 @@ const columns = [
   { accessorKey: "incidente", header: "Tipo de incidente" },
   { accessorKey: "usuario", header: "Usuario" },
   { accessorKey: "empresa", header: "Empresa" },
-  { accessorKey: "area", header: "Area" },
+  { accessorKey: "area", header: "Área" },
   { accessorKey: "sucursal", header: "Sucursal" },
   {
     accessorKey: "estado",
@@ -174,7 +86,16 @@ const columns = [
   },
   {
     accessorKey: "seleccion",
-    header: "Soporte en Situ",
+    header: (
+      <div
+        style={{
+          lineHeight: "1.1",   // más compacto que el normal (~1.4)
+          textAlign: "center", // opcional: centrado
+        }}
+      >
+        Soporte <br /> In Situ
+      </div>
+    ),
     cell: () => (
       <Checkbox
         defaultChecked
@@ -193,29 +114,10 @@ const columns = [
   },
 ]
 
-// ---------------------
+// -----------------
 // PAGE
-// ---------------------
+// -----------------
 export default function Page() {
-  const [sorting, setSorting] = React.useState([])
-  const [columnFilters, setColumnFilters] = React.useState([])
-  const [columnVisibility, setColumnVisibility] = React.useState({})
-  const [rowSelection, setRowSelection] = React.useState({})
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: { sorting, columnFilters, columnVisibility, rowSelection },
-  })
-
   return (
     <div
       style={{
@@ -224,7 +126,7 @@ export default function Page() {
         fontFamily: "Poppins, sans-serif",
       }}
     >
-      {/* Header estilo boletos_ad */}
+      {/* ✅ Header */}
       <div
         style={{
           maxWidth: "1200px",
@@ -251,25 +153,17 @@ export default function Page() {
         </div>
       </div>
 
-      {/* Filtros */}
+      {/* Filtro */}
       <div className="flex items-center gap-4 py-4 px-6 max-w-[1200px] mx-auto">
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
-          <Input
-            placeholder="Buscar Tipo de Incidente"
-            value={table.getColumn("incidente")?.getFilterValue() ?? ""}
-            onChange={(event) =>
-              table.getColumn("incidente")?.setFilterValue(event.target.value)
-            }
-            className="pl-8"
-          />
+          <Input placeholder="Buscar Tipo de Incidente" className="pl-8" />
         </div>
-        <ComboboxDemo />
       </div>
 
-      {/* ✅ Tabla */}
+      {/* Tabla reutilizable */}
       <div className="px-6 max-w-[1200px] mx-auto">
-        <TableCn columns={columns} data={data} />
+        <TicketsTable data={data} columns={columns} />
       </div>
     </div>
   )

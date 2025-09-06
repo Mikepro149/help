@@ -9,7 +9,7 @@ const sections = [
 	{ name: "Home", href: "/inicio_ad", icon: <FaHome style={{ marginRight: 12 }} /> },
 	{ name: "Tickets", href: "/boletos_ad", icon: <FaTicketAlt style={{ marginRight: 12 }} /> },
 	{ name: "Clientes", href: "/cliente_ad", icon: <FaUsers style={{ marginRight: 12 }} /> },
-	{ name: "Productos", href: "/productos_ad", icon: <FaBoxOpen style={{ marginRight: 12 }} /> },
+	{ name: "Empresa", href: "/empresa_ad", icon: <FaBoxOpen style={{ marginRight: 12 }} /> },
 	{ name: "Plan de Soporte", href: "/planSoporte_ad", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
 ];
 

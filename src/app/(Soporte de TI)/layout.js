@@ -9,7 +9,7 @@ export default function AdminLayout({ children }) {
     <SidebarProvider>
       <div className="flex h-screen -flex w-screen">
         <Sidebar_ti />
-        <main className="flex-1 p-6 bg-gray-100">
+        <main className="flex-1 p-6 bg-gray-100 overflow-auto">
           {children}
         </main>
       </div>

@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { FaTicketAlt} from 'react-icons/fa';
+
 import { Button } from "@/components/ui/button";
 import { Mail } from "lucide-react";
 
@@ -128,9 +130,9 @@ export default function ListaTickets() {
         justifyContent: "space-between",
         marginBottom: "30px"
       }}>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <span style={{ fontSize: "32px", marginRight: "15px" }}>🏠</span>
-          <span style={{ fontSize: "24px", fontWeight: "bold" }}>Lista de tickets</span>
+        <div style={{ display: "flex", alignItems: "center", padding:"5px"}}>
+          <FaTicketAlt size={64} color="#000" style={{ marginRight: "10px", display:"flex", marginBottom:"10px"}} />
+          <span style={{ fontSize: "24px", fontWeight: "bold" }}>Lista de Tickets</span>
         </div>
         <div style={{ textAlign: "right", fontSize: "16px", color: "#333" }}>
           <span style={{ fontWeight: "bold" }}>Empresa</span> | Juan Pérez &nbsp;
