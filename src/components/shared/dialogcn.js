@@ -24,8 +24,8 @@ export default function DialogCn({
         </button>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader>
-          {title && <DialogTitle>{title}</DialogTitle>}
+        <DialogHeader className="bg-orange-100 -m-6 mb-0 p-6 rounded-t-lg">
+          {title && <DialogTitle className="text-3xl font-semibold text-center" >{title}</DialogTitle>}
           {description && <DialogDescription>{description}</DialogDescription>}
         </DialogHeader>
         {children}
