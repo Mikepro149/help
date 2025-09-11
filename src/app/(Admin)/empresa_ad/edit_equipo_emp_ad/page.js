@@ -8,7 +8,7 @@ import DialogCn from "@/components/shared/dialogcn";
 import { TabsCn } from "@/components/shared/tabscn";
 import { useState } from "react";
 
-export default function RegistrarEquipoEmpresaAD() {
+export default function EditarEquipoEmpresaAD() {
   const steps = ['Usuario', 'Hardware', 'Software'];
   const [step, setStep] = useState(0);
 
@@ -33,7 +33,7 @@ export default function RegistrarEquipoEmpresaAD() {
             <div className="grid grid-cols-3 gap-4">
               {/* Usuario */}
               <div className="flex flex-col">
-                <label htmlFor="usuario" className="text-lg font-bold text-gray-700 ">Usuario:</label>
+                <label htmlFor="usuario" className="text-lg font-bold text-gray-700 ">Usuario</label>
                 <select
                   id="usuario"
                   className="p-2 border border-gray-300 rounded-md"
@@ -46,7 +46,7 @@ export default function RegistrarEquipoEmpresaAD() {
 
               {/* Sucursal */}
               <div className="flex flex-col">
-                <label htmlFor="sucursal" className="text-lg font-bold text-gray-700">Sucursal:</label>
+                <label htmlFor="sucursal" className="text-lg font-bold text-gray-700">Sucursal</label>
                 <select
                   id="sucursal"
                   className="p-2 border border-gray-300 rounded-md"
@@ -59,7 +59,7 @@ export default function RegistrarEquipoEmpresaAD() {
 
               {/* Área */}
               <div className="flex flex-col">
-                <label htmlFor="area" className="text-lg font-bold text-gray-700">Área:</label>
+                <label htmlFor="area" className="text-lg font-bold text-gray-700">Área</label>
                 <select
                   id="area"
                   className="p-2 border border-gray-300 rounded-md"
@@ -75,7 +75,7 @@ export default function RegistrarEquipoEmpresaAD() {
             <div className="grid grid-cols-2 gap-4">
               {/* Correo */}
               <div className="flex flex-col">
-                <label htmlFor="correo" className="text-lg font-bold text-gray-700">Correo electrónico:</label>
+                <label htmlFor="correo" className="text-lg font-bold text-gray-700">Correo</label>
                 <input
                   id="correo"
                   type="email"
@@ -86,17 +86,7 @@ export default function RegistrarEquipoEmpresaAD() {
 
               {/* Contraseña */}
               <div className="flex flex-col">
-                <label htmlFor="clave" className="text-lg font-bold text-gray-700">Contraseña:</label>
-                <input
-                  id="clave"
-                  type="password"
-                  placeholder="••••••"
-                  className="p-2 border border-gray-300 rounded-md"
-                />
-              </div>
-                            {/* Confirmar contraseña */}
-              <div className="flex flex-col">
-                <label htmlFor="clave" className="text-lg font-bold text-gray-700">Confirmar Contraseña:</label>
+                <label htmlFor="clave" className="text-lg font-bold text-gray-700">Contraseña</label>
                 <input
                   id="clave"
                   type="password"
@@ -146,7 +136,15 @@ export default function RegistrarEquipoEmpresaAD() {
 
             {/* 🔷 Fila 2: Inputs */}
             <div className="grid grid-cols-3 gap-4">
-
+              <div className="flex flex-col">
+                <label htmlFor="Plan" className="text-lg font-bold text-gray-700">Plan:</label>
+                <input
+                  id="correo"
+                  type="email"
+                  placeholder="correo@ejemplo.com"
+                  className="p-2 border border-gray-300 rounded-md"
+                />
+              </div>
               <div className="flex flex-col">
                 <label htmlFor="Marca:" className="text-lg font-bold text-gray-700">Marca:</label>
                 <input
@@ -165,33 +163,22 @@ export default function RegistrarEquipoEmpresaAD() {
                   className="p-2 border border-gray-300 rounded-md"
                 />
               </div>
-              <div className="flex flex-col">
-                <label htmlFor="Prioridad" className="text-lg font-bold text-gray-700 ">Prioridad:</label>
-                <select
-                  id="Prioridad"
-                  className="p-2 border border-gray-300 rounded-md"
-                >
-                  <option>Opción 1</option>
-                  <option>Opción 2</option>
-                  <option>Opción 3</option>
-                </select>
-              </div>
             </div>
-            <div className="flex flex-col">
-                <label htmlFor="Plan" className="text-lg font-bold text-gray-700">Plan:</label>
-                <input
-                    id="casilla"
-                    type="checkbox"
-                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
-                />
-              </div>
+
             {/* 🔶 Fila 3: Otros Inputs (ejemplo) */}
             <div className="grid grid-cols-3 gap-4">
               <div className="flex flex-col">
                 <label className="text-lg font-bold text-gray-700">Descrición del equipo:</label>
                 <input className="p-2 border border-gray-300 rounded-md" />
               </div>
-
+              <div className="flex flex-col">
+                <label className="text-lg font-bold text-gray-700">Última Revisión:</label>
+                <input className="p-2 border border-gray-300 rounded-md" />
+              </div>
+              <div className="flex flex-col">
+                <label className="text-lg font-bold text-gray-700">Revisión Programada:</label>
+                <input className="p-2 border border-gray-300 rounded-md" />
+              </div>
             </div>
 
             {/* 🟠 Fila 4: Tabla con 6 columnas */}
