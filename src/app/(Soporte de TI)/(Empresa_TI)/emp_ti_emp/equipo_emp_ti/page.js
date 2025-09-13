@@ -4,7 +4,7 @@ import DialogCn from "@/components/shared/dialogcn_prueba";
 import { TabsCn } from "@/components/shared/tabscn";
 import { useState } from "react";
 import TicketsTable from "@/components/shared/tablecn_component";
-import { User } from 'lucide-react'
+import { FileSearch, ComputerIcon } from 'lucide-react'
 
 // -----------------
 // DATA
@@ -51,20 +51,20 @@ export default function EditarEquipoEmpresaAD() {
     { accessorKey: "revision", header: "Última Revisión" },
     { accessorKey: "programada", header: "Revisión Programada" },
     {
-      accessorKey: "acciones",
-      header: "Acciones",
-      cell: ({ row }) => (
+    accessorKey: "acciones",
+    header: "Acciones",
+    cell: ({ row }) => (
         <button
-          onClick={() => {
+        onClick={() => {
             setSelectedRow(row.original);
             setStep(0); // reinicia siempre en "Usuario"
             setOpen(true);
-          }}
-          className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+        }}
+        className="text-black-600 hover:text-black-800"
         >
-          Editar
+        <FileSearch size={20} />
         </button>
-      ),
+    ),
     },
   ];
 
@@ -87,12 +87,12 @@ export default function EditarEquipoEmpresaAD() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center" }}>
-        {/* 👇 Aquí reemplazamos el emoji por el ícono User */}
-        <User size={32} style={{ marginRight: "15px" }} />
-        <span style={{ fontSize: "24px", fontWeight: "bold" }}>
-          Clientes
-        </span>
-      </div>
+          {/* 👇 Aquí reemplazamos el emoji por el ícono User */}
+          <ComputerIcon size={32} style={{ marginRight: "15px" }} />
+          <span style={{ fontSize: "24px", fontWeight: "bold" }}>
+            Equipos - Empresa YYY
+          </span>
+        </div>
         <div style={{ textAlign: "right", fontSize: "16px", color: "#333" }}>
           <span style={{ fontWeight: "bold" }}>J&P PERIFERICOS</span> | Carlos Manuel, Perez Diaz &nbsp;
           <span style={{ color: "#888" }}>Administrador</span>
@@ -196,110 +196,113 @@ export default function EditarEquipoEmpresaAD() {
 
           {step === 1 && (
             <div className="space-y-6">
-              {/* 🔶 Fila 1: Selects */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="flex flex-col">
-                  <label htmlFor="Tipo del equipo:" className="text-lg font-bold text-gray-700">Tipo del equipo:</label>
-                  <input
-                    id="correo"
-                    type="email"
-                    placeholder="correo@ejemplo.com"
-                    className="p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label htmlFor="Nº Serie:" className="text-lg font-bold text-gray-700">Nº Serie:</label>
-                  <input
-                    id="correo"
-                    type="email"
-                    placeholder="correo@ejemplo.com"
-                    className="p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label htmlFor="Fecha de Compra" className="text-lg font-bold text-gray-700">Fecha de Compra:</label>
-                  <input
-                    id="correo"
-                    type="email"
-                    placeholder="correo@ejemplo.com"
-                    className="p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
+            {/* 🔶 Fila 1: Selects */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="flex flex-col">
+                <label htmlFor="Tipo del equipo:" className="text-lg font-bold text-gray-700">Tipo del equipo:</label>
+                <input
+                  id="correo"
+                  type="email"
+                  placeholder="correo@ejemplo.com"
+                  className="p-2 border border-gray-300 rounded-md"
+                />
               </div>
-
-              {/* 🔷 Fila 2: Inputs */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="flex flex-col">
-                  <label htmlFor="Plan" className="text-lg font-bold text-gray-700">Plan:</label>
-                  <input
-                    id="correo"
-                    type="email"
-                    placeholder="correo@ejemplo.com"
-                    className="p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label htmlFor="Marca:" className="text-lg font-bold text-gray-700">Marca:</label>
-                  <input
-                    id="clave"
-                    type="password"
-                    placeholder="••••••"
-                    className="p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <label htmlFor="Proveedor" className="text-lg font-bold text-gray-700">Proveedor:</label>
-                  <input
-                    id="clave"
-                    type="password"
-                    placeholder="••••••"
-                    className="p-2 border border-gray-300 rounded-md"
-                  />
-                </div>
+              <div className="flex flex-col">
+                <label htmlFor="Nº Serie:" className="text-lg font-bold text-gray-700">Nº Serie:</label>
+                <input
+                  id="correo"
+                  type="email"
+                  placeholder="correo@ejemplo.com"
+                  className="p-2 border border-gray-300 rounded-md"
+                />
               </div>
-
-              {/* 🔶 Fila 3: Otros Inputs */}
-              <div className="grid grid-cols-3 gap-4">
-                <div className="flex flex-col">
-                  <label className="text-lg font-bold text-gray-700">Descrición del equipo:</label>
-                  <input className="p-2 border border-gray-300 rounded-md" />
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-lg font-bold text-gray-700">Última Revisión:</label>
-                  <input className="p-2 border border-gray-300 rounded-md" />
-                </div>
-                <div className="flex flex-col">
-                  <label className="text-lg font-bold text-gray-700">Revisión Programada:</label>
-                  <input className="p-2 border border-gray-300 rounded-md" />
-                </div>
-              </div>
-
-              {/* 🟠 Fila 4: Tabla */}
-              <div className="overflow-x-auto border rounded-md">
-                <table className="min-w-full text-left text-sm border-collapse">
-                  <thead className="bg-gray-100 text-gray-700">
-                    <tr>
-                      <th className="px-4 py-2 border">Tipo</th>
-                      <th className="px-4 py-2 border">Fecha de Instalación</th>
-                      <th className="px-4 py-2 border">Descripción</th>
-                      <th className="px-4 py-2 border">Serie</th>
-                      <th className="px-4 py-2 border">Proveedor</th>
-                      <th className="px-4 py-2 border"><button>+</button></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="px-4 py-2 border">SSD</td>
-                      <td className="px-4 py-2 border">5 May 2024</td>
-                      <td className="px-4 py-2 border">Almacenamiento de...</td>
-                      <td className="px-4 py-2 border">1234</td>
-                      <td className="px-4 py-2 border">Tienda X</td>
-                      <td className="px-4 py-2 border">/ O</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="flex flex-col">
+                <label htmlFor="Fecha de Compra" className="text-lg font-bold text-gray-700">Fecha de Compra:</label>
+                <input
+                  id="correo"
+                  type="email"
+                  placeholder="correo@ejemplo.com"
+                  className="p-2 border border-gray-300 rounded-md"
+                />
               </div>
             </div>
+
+            {/* 🔷 Fila 2: Inputs */}
+            <div className="grid grid-cols-3 gap-4">
+
+              <div className="flex flex-col">
+                <label htmlFor="Marca:" className="text-lg font-bold text-gray-700">Marca:</label>
+                <input
+                  id="clave"
+                  type="password"
+                  placeholder="••••••"
+                  className="p-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="Proveedor" className="text-lg font-bold text-gray-700">Proveedor:</label>
+                <input
+                  id="clave"
+                  type="password"
+                  placeholder="••••••"
+                  className="p-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label htmlFor="Prioridad" className="text-lg font-bold text-gray-700 ">Prioridad:</label>
+                <select
+                  id="Prioridad"
+                  className="p-2 border border-gray-300 rounded-md"
+                >
+                  <option>Opción 1</option>
+                  <option>Opción 2</option>
+                  <option>Opción 3</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex flex-col">
+                <label htmlFor="Plan" className="text-lg font-bold text-gray-700">Plan:</label>
+                <input
+                    id="casilla"
+                    type="checkbox"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                />
+              </div>
+            {/* 🔶 Fila 3: Otros Inputs (ejemplo) */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="flex flex-col">
+                <label className="text-lg font-bold text-gray-700">Descrición del equipo:</label>
+                <input className="p-2 border border-gray-300 rounded-md" />
+              </div>
+
+            </div>
+
+            {/* 🟠 Fila 4: Tabla con 6 columnas */}
+            <div className="overflow-x-auto border rounded-md">
+              <table className="min-w-full text-left text-sm border-collapse">
+                <thead className="bg-gray-100 text-gray-700">
+                  <tr>
+                    <th className="px-4 py-2 border">Tipo</th>
+                    <th className="px-4 py-2 border">Fecha de Instalación</th>
+                    <th className="px-4 py-2 border">Descripción</th>
+                    <th className="px-4 py-2 border">Serie</th>
+                    <th className="px-4 py-2 border">Proveedor</th>
+                    <th className="px-4 py-2 border"><button>+</button></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="px-4 py-2 border">SSD</td>
+                    <td className="px-4 py-2 border">5 May 2024</td>
+                    <td className="px-4 py-2 border">Almacenamiento de...</td>
+                    <td className="px-4 py-2 border">1234</td>
+                    <td className="px-4 py-2 border">Tienda X</td>
+                    <td className="px-4 py-2 border">/ O</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
           )}
 
           {step === 2 && (

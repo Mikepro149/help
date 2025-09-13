@@ -204,14 +204,6 @@ const [mostrarFilaContacto, setMostrarFilaContacto] = useState(false);
   </section>
 )}
 
-
-
-
-
-
-
-
-
 {/* Paso 1: Sucursales */}
 {step === 2&& (
   <section>
@@ -321,9 +313,6 @@ const [mostrarFilaContacto, setMostrarFilaContacto] = useState(false);
   </section>
 )}
 
-
-
-
     {/* Paso 2: Áreas */}
 {step === 3 && (
   <section>
@@ -355,7 +344,7 @@ const [mostrarFilaContacto, setMostrarFilaContacto] = useState(false);
           </tr>
         ))}
 
-        {/* Fila editable para nueva área */}
+        {/* FILA QUE MUESTRA EL PROCESO DE EDITAR DE CADA FILA*/}
         {mostrarFilaArea && (
           <tr className="border-t bg-[#fff0f5]">
             <td className="p-2">
@@ -422,7 +411,7 @@ const [mostrarFilaContacto, setMostrarFilaContacto] = useState(false);
   </section>
 )}
 
-{/* Paso 4: Datos de acceso */}
+{/* Paso 4: DATOS DE ACCESO */}
 {step === 4 && (
   <section className="space-y-4">
     <input
@@ -452,7 +441,7 @@ const [mostrarFilaContacto, setMostrarFilaContacto] = useState(false);
 )}
 
       </div>
-      {/* Navegación */}
+      {/* EN ESTA APARTE SE VE LA NAVEGACION*/}
       <div className="mt-8 flex justify-between">
         <button
           onClick={onPrev}

@@ -33,7 +33,7 @@ const data = [
     soporte: false,
   },
 ];
-
+////
 const columns = [
   { accessorKey: "id", header: "ID" },
   { accessorKey: "tipo", header: "Tipo de incidente" },

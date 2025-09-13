@@ -4,7 +4,7 @@ import { Search, Mail, ArrowUp } from "lucide-react"
 import Link from "next/link"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
-import TicketsTable from "@/components/shared/tablecn1_prueba"
+import TicketsTable from "@/components/shared/tablecn_component"
 
 // -----------------
 // DATA
