@@ -5,30 +5,15 @@ import React from "react";
 import { FaHome, FaTicketAlt, FaUsers, FaBoxOpen, FaClipboardList, FaUserCircle, FaSignOutAlt } from "react-icons/fa";
 
 
-function getSectionsCliente() {
-	return [
-		{ name: "Home", href: "/cliente/cliente_add", icon: <FaHome style={{ marginRight: 12 }} /> },
-		{ name: "Tickets", href: "/cliente/boletos_cliente", icon: <FaTicketAlt style={{ marginRight: 12 }} /> },
-		{ name: "Clientes", href: "/cliente/cliente_ad", icon: <FaUsers style={{ marginRight: 12 }} /> },
-		{ name: "Productos", href: "/cliente/productos_cliente", icon: <FaBoxOpen style={{ marginRight: 12 }} /> },
-		{ name: "Plan de Soporte", href: "/cliente/planSoporte_cliente", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
-	];
-}
-
-function getSectionsDefault() {
-	return [
-		{ name: "Home", href: "/inicio_ad", icon: <FaHome style={{ marginRight: 12 }} /> },
-		{ name: "Tickets", href: "/boletos_ad", icon: <FaTicketAlt style={{ marginRight: 12 }} /> },
-		{ name: "Clientes", href: "/cliente_ad", icon: <FaUsers style={{ marginRight: 12 }} /> },
-		{ name: "Productos", href: "/productos_ad", icon: <FaBoxOpen style={{ marginRight: 12 }} /> },
-		{ name: "Plan de Soporte", href: "/planSoporte_ad", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
-	];
-}
+const sections = [
+	{ name: "Home", href: "/cliente/inicio_cliente", icon: <FaHome style={{ marginRight: 12 }} /> },
+	{ name: "Tickets", href: "/cliente/boletos_cliente", icon: <FaTicketAlt style={{ marginRight: 12 }} /> },
+	{ name: "Clientes", href: "/cliente/cliente_cliente", icon: <FaUsers style={{ marginRight: 12 }} /> },
+	{ name: "Productos", href: "/cliente/productos_cliente", icon: <FaBoxOpen style={{ marginRight: 12 }} /> },
+	{ name: "Plan de Soporte", href: "/cliente/planSoporte_cliente", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
+];
 
 const Sidebar = ({ onProfile, onLogout }) => {
-	// Detectar si estamos en la vista de cliente
-	const isCliente = typeof window !== 'undefined' && window.location.pathname.startsWith('/cliente');
-	const sections = isCliente ? getSectionsCliente() : getSectionsDefault();
 	return (
 		<aside
 			style={{

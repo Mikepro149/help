@@ -55,7 +55,7 @@ export default function InicioAdmin() {
         maxWidth: "1200px",
         margin: "30px auto 0 auto",
         display: "flex",
-        flexWrap: "wrap",
+        flexWrap: "wrap", 
         justifyContent: "center",
         gap: "30px"
       }}>
