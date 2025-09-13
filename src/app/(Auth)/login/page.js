@@ -1,45 +1,78 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from 'next/navigation';
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import axiosInstance from "@/lib/axiosInstance";
+import Link from "next/link";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-
+  const [error, setError] = useState(null);
   const router = useRouter();
-  useEffect(() => {
-    setEmail("prueba@ejemplo.com");
-    setPassword("12345678");
-    setRemember(true);
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
 
   const togglePassword = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Usuario: ${email}, Contraseña: ${password}, Recordar: ${remember}`);
-    router.push("/sidebar");
-  };
+    setError(null);
+    if (!email || !password) {
+        setError("Email y contraseña son requeridos");
+        return;
+      }
+    setIsLoading(true);
 
+    try {
+      // Usa la instancia configurada para enviar la solicitud
+      const response = await axiosInstance.post("/login", {
+        email,
+        password,
+        remember,
+      });
+
+      console.log('Response:', response); // DEBUG
+    console.log('Cookies:', document.cookie); // DEBUG
+
+      // Almacena el token del backend
+      if (typeof window !== "undefined") {
+        localStorage.setItem("sanctum_token", response.data.token);
+      }
+
+      const searchParams = new URLSearchParams(window.location.search);
+      const redirect = searchParams.get("redirect") || "/inicio_ad";
+      router.push(redirect);
+    } catch (err) {
+      if (err.response?.status === 422) {
+        setError("Credenciales inválidas");
+      } else if (err.response?.status === 429) {
+        setError("Demasiados intentos. Intenta más tarde");
+      } else {
+        setError(err.response?.data?.message || "Error de conexión");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex h-screen min-h-[600px] w-full bg-[#454545]">
       <div className="flex-1 min-w-[300px] bg-[#f89e1b] clip-path-custom"></div>
-
       <div className="flex-1 min-w-[300px] bg-[#454545] flex justify-center items-center">
         <div className="bg-[#454545] p-5 rounded-lg text-center w-4/5 max-w-[400px] flex flex-col justify-center max-h-[500px]">
           <h2 className="font-sans py-5 text-white text-2xl md:text-3xl bg-[#5c5c5c] mb-6 rounded-lg">
             INICIO DE SESION
           </h2>
-
           <form onSubmit={handleSubmit}>
-            <label htmlFor="email" className="block text-white mb-2 text-left text-lg">
+            <label
+              htmlFor="email"
+              className="block text-white mb-2 text-left text-lg"
+            >
               Usuario (Correo electronico)
             </label>
             <input
@@ -51,8 +84,10 @@ export default function Login() {
               required
               className="p-3 border-2 border-gray-300 rounded-full text-base mb-4 w-full"
             />
-
-            <label htmlFor="password" className="block text-white mb-2 text-left text-lg">
+            <label
+              htmlFor="password"
+              className="block text-white mb-2 text-left text-lg"
+            >
               Contraseña
             </label>
             <div className="relative w-full">
@@ -71,7 +106,6 @@ export default function Login() {
                 👁
               </span>
             </div>
-
             <div className="flex items-center text-white text-base mb-5 gap-2">
               <input
                 type="checkbox"
@@ -84,22 +118,19 @@ export default function Login() {
                 Recordar contraseña
               </label>
             </div>
-
-            <Button
-              type="submit"
-              variant="login"
-
-            >
-              Iniciar Sesion
+            {error && <p className="text-red-500 mb-4">{error}</p>}
+            <Button type="submit" variant="login" disabled={isLoading}>
+              {isLoading ? "Iniciando..." : "Iniciar Sesion"}
             </Button>
-
             <div className="text-white text-base">
               <p>
                 ¿Olvidaste tu contraseña?
                 <br />
-                <a href="/forgotpassword" className="text-[#f89e1b] font-bold hover:underline">
+                <Link href="/forgotpassword"
+                  className="text-[#f89e1b] font-bold hover:underline"
+                >
                   Te ayudamos
-                </a>
+                </Link>
               </p>
             </div>
           </form>
