@@ -1,13 +1,18 @@
+"use client";
+
+import { SidebarProvider } from "@/components/ui/sidebar";
+import Sidebar from "@/components/sidebar/sidebar_cliente";
 import React from "react";
-import Sidebar from "@/components/sidebar/sidebar";
 
 export default function ClienteLayout({ children }) {
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', width: '100vw' }}>
-  <Sidebar />
-      <main style={{ flex: 1, background: '#f7f7f7', minHeight: '100vh', overflow: 'auto' }}>
-        {children}
-      </main>
-    </div>
+    <SidebarProvider>
+      <div className="flex h-screen -flex w-screen">
+        <Sidebar />
+        <main className="flex-1 p-6 bg-gray-100 overflow-auto">
+          {children}
+        </main>
+      </div>
+    </SidebarProvider>
   );
 }

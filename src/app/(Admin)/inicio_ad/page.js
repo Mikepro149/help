@@ -1,7 +1,16 @@
 import React from "react";
 import { FaHome,FaTicketAlt, FaHistory, FaBell, FaUsers } from 'react-icons/fa';
+import TicketStatusCard from "@/components/TicketStatusCard";
 
 export default function InicioAdmin() {
+  // Simulación de datos
+  const ticketsEnProceso = 25;
+  const ticketsResueltos = 80;
+  const totalTickets = 100;
+
+  const porcentajeProceso = Math.round((ticketsEnProceso / totalTickets) * 100);
+  const porcentajeResueltos = Math.round((ticketsResueltos / totalTickets) * 100);
+
   return (
     <div style={{ background: "#f7f7f7", minHeight: "90vh", fontFamily: "sans-serif" }}>
       {/* Container superior */}
@@ -180,6 +189,27 @@ export default function InicioAdmin() {
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <div className="flex flex-col md:flex-row gap-6 justify-center items-center md:items-start w-full p-4 bg-[#ededed] min-h-screen">
+        {/* Otras tarjetas aquí si las tienes */}
+
+        <div className="flex flex-col md:flex-row gap-6 w-full justify-center">
+          <TicketStatusCard
+            title="Tickets en Proceso"
+            percent={porcentajeProceso}
+            color="#f89e1b"
+            label="En Proceso"
+          />
+          <TicketStatusCard
+            title="Tickets Resueltos"
+            percent={porcentajeResueltos}
+            color="#4caf50"
+            label="Resueltos"
+          />
+        </div>
+
+        {/* Otras tarjetas aquí si las tienes */}
       </div>
     </div>
   );

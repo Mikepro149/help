@@ -8,7 +8,7 @@ import { FaHome, FaTicketAlt, FaUsers, FaBoxOpen, FaClipboardList, FaUserCircle,
 const sections = [
 	{ name: "Home", href: "/cliente/inicio_cliente", icon: <FaHome style={{ marginRight: 12 }} /> },
 	{ name: "Tickets", href: "/cliente/boletos_cliente", icon: <FaTicketAlt style={{ marginRight: 12 }} /> },
-	{ name: "Clientes", href: "/cliente/cliente_cliente", icon: <FaUsers style={{ marginRight: 12 }} /> },
+	{ name: "Clientes", href: "/cliente/clientes_cliente", icon: <FaUsers style={{ marginRight: 12 }} /> },
 	{ name: "Productos", href: "/cliente/productos_cliente", icon: <FaBoxOpen style={{ marginRight: 12 }} /> },
 	{ name: "Plan de Soporte", href: "/cliente/planSoporte_cliente", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
 ];
