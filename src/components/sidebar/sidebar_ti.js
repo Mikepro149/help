@@ -11,7 +11,7 @@ const sections = [
     { name: "Clientes", href: "/cliente_ti", icon: <FaUsers style={{ marginRight: 12 }} /> },
     { name: "Productos", href: "/productos_ti", icon: <FaBoxOpen style={{ marginRight: 12 }} /> },
     { name: "Soporte tecnico", href: "/soporte-tecnico", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
-    { name: "Empresa", href: "/empresa_ti", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
+    { name: "Empresa", href: "/emp_ti_emp", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
 ];
 
 const Sidebar_ti = ({ onProfile, onLogout }) => {

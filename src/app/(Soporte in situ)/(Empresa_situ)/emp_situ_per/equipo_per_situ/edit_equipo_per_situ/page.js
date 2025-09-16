@@ -8,7 +8,7 @@ import DialogCn from "@/components/shared/dialogcn";
 import { TabsCn } from "@/components/shared/tabscn";
 import { useState } from "react";
 
-export default function EditarEquipoPersonaTI() {
+export default function EditarEquipoPersonaSitu0() {
   const steps = ['Usuario', 'Hardware', 'Software'];
   const [step, setStep] = useState(0);
 
