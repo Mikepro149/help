@@ -38,17 +38,23 @@ const handleSubmit = (e) => {
 
 
   return (
-    <div className="flex h-screen min-h-[600px] w-full bg-[#454545]">
-      <div className="flex-1 min-w-[300px] bg-[#f89e1b] clip-path-custom"></div>
+<div className="flex h-screen min-h-[600px] w-full bg-[#454545]">
+  {/* LADO IZQUIERDO: fondo amarillo + triángulo al borde derecho */}
+  <div className="flex-1 min-w-[300px] bg-[#f89e1b] flex justify-end items-center">
+    {/* TRIÁNGULO GRIS QUE APUNTA A LA IZQUIERDA */}
+    <div className="w-0 h-0 border-y-[476px] border-y-transparent border-r-[400px] border-r-[#454545]"></div>
+  </div>
 
-      <div className="flex-1 min-w-[300px] bg-[#454545] flex justify-center items-center">
+  {/* LADO DERECHO: formulario */}
+  <div className="flex-1 min-w-[300px] bg-[#454545] flex justify-center items-center">
+        
         <div className="bg-[#454545] p-5 rounded-lg text-center w-4/5 max-w-[400px] flex flex-col justify-center max-h-[500px]">
-          <h2 className="font-sans py-5 text-white text-2xl md:text-3xl bg-[#5c5c5c] mb-6 rounded-lg">
+          <h2 className="font-sans py-5 text-white text-2xl md:text-3xl bg-[#5c5c5c] mb-6 rounded-lg font-bold">
             INICIO DE SESION
           </h2>
 
           <form onSubmit={handleSubmit}>
-            <label htmlFor="email" className="block text-white mb-2 text-left text-lg">
+            <label htmlFor="email" className="block text-white mb-2 text-left text-lg font-bold">
               Usuario (Correo electronico)
             </label>
             <input
@@ -58,10 +64,10 @@ const handleSubmit = (e) => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Correo electronico"
               required
-              className="p-3 border-2 border-gray-300 rounded-full text-base mb-4 w-full"
+              className="p-3 border-2 border-gray-300 rounded-full text-base mb-4 w-full bg-white font-bold"
             />
 
-            <label htmlFor="password" className="block text-white mb-2 text-left text-lg">
+            <label htmlFor="password" className="block text-white mb-2 text-left text-lg font-bold">
               Contraseña
             </label>
             <div className="relative w-full">
@@ -71,7 +77,7 @@ const handleSubmit = (e) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="p-3 border-2 border-gray-300 rounded-full text-base mb-4 w-full pr-10"
+                className="p-3 border-2 border-gray-300 rounded-full text-base mb-4 w-full pr-10 bg-white font-bold"
               />
               <span
                 className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer text-lg"
