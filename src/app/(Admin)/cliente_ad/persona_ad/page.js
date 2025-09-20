@@ -90,80 +90,123 @@ export default function RegistrarClienteNatural() {
 
 
         {/* Paso 1: Contactos */}
-        {step === 1 && (
-          <section>
-            <h3 className="text-lg font-semibold mb-2">Contactos de referencia</h3>
-            <table className="w-full table-auto border border-gray-300 rounded-lg overflow-hidden">
-              <thead className="bg-gray-100 text-left">
-                <tr>
-                  <th className="p-2">Nombre</th>
-                  <th className="p-2">Dirección</th>
-                  <th className="p-2">Correo</th>
-                  <th className="p-2">Teléfono</th>
-                  <th className="p-2 flex items-center justify-between">
-                    <span>Cargo</span>
-                    <button
-                      className="bg-blue-600 text-white px-2 py-1 rounded font-bold text-sm"
-                      onClick={() => setMostrarFilaContacto(true)}
-                    >
-                      ➕
-                    </button>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {contactos.map((c, index) => (
-                  <tr key={index} className="border-t">
-                    <td className="p-2">{c.nombre}</td>
-                    <td className="p-2">{c.direccion}</td>
-                    <td className="p-2">{c.correo}</td>
-                    <td className="p-2">{c.telefono}</td>
-                    <td className="p-2">{c.cargo}</td>
-                  </tr>
-                ))}
+{step === 1 && (
+  <section>
+    <h3 className="text-lg font-semibold mb-4 text-[#1a3c34]">Contactos de referencia</h3>
+    <table className="w-full table-auto border border-gray-300 rounded-lg overflow-hidden text-sm font-[Poppins]">
+      <thead className="bg-[#f3f4f6] text-[#374151]">
+        <tr>
+          <th className="p-3">Nombre</th>
+          <th className="p-3">Dirección</th>
+          <th className="p-3">Correo</th>
+          <th className="p-3">Teléfono</th>
+          <th className="p-3">Cargo</th>
+          <th className="p-3 text-center">Seleccionar</th>
+          <th className="p-3 text-right">
+            <button
+              className="bg-[#34d399] text-white px-2 py-1 rounded font-bold text-sm hover:bg-[#2bbf89]"
+              onClick={() => setMostrarFilaContacto(true)}
+            >
+              ➕
+            </button>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {contactos.map((c, index) => (
+          <tr key={index} className="border-t">
+            <td className="p-3">{c.nombre}</td>
+            <td className="p-3">{c.direccion}</td>
+            <td className="p-3">{c.correo}</td>
+            <td className="p-3">{c.telefono}</td>
+            <td className="p-3">{c.cargo}</td>
+            <td className="p-3 text-center">
+              <input
+                type="checkbox"
+                checked={c.seleccionado || false}
+                onChange={() => {
+                  const actualizados = [...contactos]
+                  actualizados[index].seleccionado = !actualizados[index].seleccionado
+                  setContactos(actualizados)
+                }}
+                className="w-5 h-5 accent-[#34d399]"
+              />
+            </td>
+            <td className="p-3 text-center text-gray-400">—</td>
+          </tr>
+        ))}
 
-                {mostrarFilaContacto && (
-                  <tr className="border-t bg-[#f0faff]">
-                    {['nombre', 'direccion', 'correo', 'telefono', 'cargo'].map((field) => (
-                      <td key={field} className="p-2">
-                        <input
-                          name={field}
-                          className="w-full p-1 rounded border border-gray-300"
-                          placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                          value={nuevoContacto[field]}
-                          onChange={(e) => setNuevoContacto({ ...nuevoContacto, [field]: e.target.value })}
-                        />
-                      </td>
-                    ))}
-                    <td className="p-2 flex gap-2 items-end">
-                      <button
-                        className="bg-green-600 text-white px-3 py-1 rounded font-semibold"
-                        onClick={() => {
-                          const incompleto = Object.values(nuevoContacto).some((v) => v.trim() === '');
-                          if (incompleto) return alert('Completa todos los campos del contacto');
-                          setContactos([...contactos, nuevoContacto]);
-                          setNuevoContacto({ nombre: '', direccion: '', correo: '', telefono: '', cargo: '' });
-                          setMostrarFilaContacto(false);
-                        }}
-                      >
-                        Guardar
-                      </button>
-                      <button
-                        className="bg-red-500 text-white px-3 py-1 rounded font-semibold"
-                        onClick={() => {
-                          setNuevoContacto({ nombre: '', direccion: '', correo: '', telefono: '', cargo: '' });
-                          setMostrarFilaContacto(false);
-                        }}
-                      >
-                        Cancelar
-                      </button>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </section>
+        {mostrarFilaContacto && (
+          <tr className="border-t bg-[#f0faff] transition-all duration-300">
+            {['nombre', 'direccion', 'correo', 'telefono', 'cargo'].map((field) => (
+              <td key={field} className="p-3">
+                <input
+                  name={field}
+                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#a8d9ce] bg-white text-sm"
+                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                  value={nuevoContacto[field]}
+                  onChange={(e) =>
+                    setNuevoContacto({ ...nuevoContacto, [field]: e.target.value })
+                  }
+                />
+              </td>
+            ))}
+            <td className="p-3 text-center">
+              <input
+                type="checkbox"
+                checked={nuevoContacto.seleccionado || false}
+                onChange={(e) =>
+                  setNuevoContacto({ ...nuevoContacto, seleccionado: e.target.checked })
+                }
+                className="w-5 h-5 accent-[#34d399]"
+              />
+            </td>
+            <td className="p-3">
+              <div className="flex gap-2 justify-center">
+                <button
+                  className="bg-[#34d399] text-white px-3 py-1 rounded-md font-semibold hover:bg-[#2bbf89] transition"
+                  onClick={() => {
+                    const incompleto = ['nombre', 'direccion', 'correo', 'telefono', 'cargo']
+                      .some((campo) => nuevoContacto[campo].trim() === '')
+                    if (incompleto) return alert('Completa todos los campos del contacto')
+                    setContactos([...contactos, nuevoContacto])
+                    setNuevoContacto({
+                      nombre: '',
+                      direccion: '',
+                      correo: '',
+                      telefono: '',
+                      cargo: '',
+                      seleccionado: false
+                    })
+                    setMostrarFilaContacto(false)
+                  }}
+                >
+                  Guardar
+                </button>
+                <button
+                  className="bg-[#f87171] text-white px-3 py-1 rounded-md font-semibold hover:bg-[#ef4444] transition"
+                  onClick={() => {
+                    setNuevoContacto({
+                      nombre: '',
+                      direccion: '',
+                      correo: '',
+                      telefono: '',
+                      cargo: '',
+                      seleccionado: false
+                    })
+                    setMostrarFilaContacto(false)
+                  }}
+                >
+                  Cancelar
+                </button>
+              </div>
+            </td>
+          </tr>
         )}
+      </tbody>
+    </table>
+  </section>
+)}
 
         {/* Paso 2: Datos de acceso */}
         {step === 2 && (
@@ -199,13 +242,13 @@ export default function RegistrarClienteNatural() {
       </div>
 
       <div className="mt-8 flex justify-between">
-        <button
-          onClick={onPrev}
-          disabled={step === 0}
-          className={`px-6 py-2 rounded-lg font-bold ${step === 0 ? 'bg-gray-300' : 'bg-orange-500 text-white'}`}
-        >
-          Volver
-        </button>
+       <button
+  type="button"
+  onClick={() => window.location.href = "/cliente_ad?tipo=persona"}
+  className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-bold hover:bg-gray-400"
+>
+  Volver
+</button>
         {step < steps.length - 1 ? (
           <button onClick={onNext} className="px-6 py-2 bg-orange-500 text-white rounded-lg font-bold">
             Siguiente

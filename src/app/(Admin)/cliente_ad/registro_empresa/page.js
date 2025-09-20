@@ -32,9 +32,8 @@ const [mostrarFilaSucursal, setMostrarFilaSucursal] = useState(false);
 //////
 const [mostrarFilaArea, setMostrarFilaArea] = useState(false);
 ////////
-const [contactos, setContactos] = useState([
-  { nombre: '', direccion: '', correo: '', telefono: '', cargo: '' },
-]);
+const [contactos, setContactos] = useState([]);
+
 const [nuevoContacto, setNuevoContacto] = useState({ nombre: '', direccion: '', correo: '', telefono: '', cargo: '' });
 const [mostrarFilaContacto, setMostrarFilaContacto] = useState(false);
 ////
@@ -99,103 +98,102 @@ const [mostrarFilaContacto, setMostrarFilaContacto] = useState(false);
 {step === 1 && (
   <section>
     <h3 className="text-lg font-semibold mb-2">Contactos de referencia</h3>
-    <table className="w-full table-auto border border-gray-300 rounded-lg overflow-hidden">
-      <thead className="bg-[#f3f4f6] text-left">
+    <table className="w-full table-fixed border border-gray-300 rounded-lg overflow-hidden text-sm font-[Poppins]">
+      <thead className="bg-gray-100 text-left">
         <tr>
-          <th className="p-2">Nombre</th>
-          <th className="p-2">Dirección</th>
-          <th className="p-2">Correo</th>
-          <th className="p-2">Teléfono</th>
-          <th className="p-2 flex items-center justify-between">
-            <span>Cargo</span>
-            <button
-              className="bg-blue-600 text-white px-2 py-1 rounded font-bold text-sm"
-              onClick={() => setMostrarFilaContacto(true)}
-            >
-              ➕
-            </button>
-          </th>
+          <th className="p-2 w-[140px]">Nombre</th>
+          <th className="p-2 w-[180px]">Dirección</th>
+          <th className="p-2 w-[180px]">Correo</th>
+          <th className="p-2 w-[140px]">Teléfono</th>
+          <th className="p-2 w-[180px]">Cargo</th>
+          <th className="p-2 w-[160px] text-right">
+          <button
+            className={`bg-blue-600 text-white px-2 py-1 rounded font-bold text-sm hover:bg-blue-700 transition ${
+              mostrarFilaContacto ? 'opacity-50 cursor-not-allowed' : ''
+            }`}
+            onClick={() => setMostrarFilaContacto(true)}
+            disabled={mostrarFilaContacto}
+          >
+            ➕
+          </button>
+        </th>
         </tr>
       </thead>
       <tbody>
+        {contactos.length === 0 && !mostrarFilaContacto && (
+          <tr>
+            <td colSpan={6} className="p-4 text-center text-gray-500 italic">
+              No hay contactos registrados
+            </td>
+          </tr>
+        )}
+
         {contactos.map((c, index) => (
           <tr key={index} className="border-t">
-            <td className="p-2">{c.nombre}</td>
-            <td className="p-2">{c.direccion}</td>
-            <td className="p-2">{c.correo}</td>
-            <td className="p-2">{c.telefono}</td>
-            <td className="p-2">{c.cargo}</td>
+            <td className="p-2 w-[140px]">{c.nombre}</td>
+            <td className="p-2 w-[180px]">{c.direccion}</td>
+            <td className="p-2 w-[180px]">{c.correo}</td>
+            <td className="p-2 w-[140px]">{c.telefono}</td>
+            <td className="p-2 w-[180px]">{c.cargo}</td>
+            <td className="p-2 w-[160px] text-right">
+              <input
+                type="checkbox"
+                checked={c.seleccionado || false}
+                onChange={() => {
+                  const actualizados = [...contactos];
+                  actualizados[index].seleccionado = !actualizados[index].seleccionado;
+                  setContactos(actualizados);
+                }}
+                className="w-5 h-5 accent-[#34d399] "
+              />
+            </td>
           </tr>
         ))}
 
-        {/* Fila editable para nuevo contacto */}
         {mostrarFilaContacto && (
-          <tr className="border-t bg-[#f0faff]">
-            <td className="p-2">
-              <input
-                name="nombre"
-                className="w-full p-1 rounded border border-gray-300"
-                placeholder="Nombre"
-                value={nuevoContacto.nombre}
-                onChange={(e) => setNuevoContacto({ ...nuevoContacto, nombre: e.target.value })}
-              />
-            </td>
-            <td className="p-2">
-              <input
-                name="direccion"
-                className="w-full p-1 rounded border border-gray-300"
-                placeholder="Dirección"
-                value={nuevoContacto.direccion}
-                onChange={(e) => setNuevoContacto({ ...nuevoContacto, direccion: e.target.value })}
-              />
-            </td>
-            <td className="p-2">
-              <input
-                name="correo"
-                className="w-full p-1 rounded border border-gray-300"
-                placeholder="Correo"
-                value={nuevoContacto.correo}
-                onChange={(e) => setNuevoContacto({ ...nuevoContacto, correo: e.target.value })}
-              />
-            </td>
-            <td className="p-2">
-              <input
-                name="telefono"
-                className="w-full p-1 rounded border border-gray-300"
-                placeholder="Teléfono"
-                value={nuevoContacto.telefono}
-                onChange={(e) => setNuevoContacto({ ...nuevoContacto, telefono: e.target.value })}
-              />
-            </td>
-            <td className="p-2 flex gap-2 items-end">
-              <input
-                name="cargo"
-                className="flex-1 p-1 rounded border border-gray-300"
-                placeholder="Cargo"
-                value={nuevoContacto.cargo}
-                onChange={(e) => setNuevoContacto({ ...nuevoContacto, cargo: e.target.value })}
-              />
-              <button
-                className="bg-green-600 text-white px-3 py-1 rounded font-semibold"
-                onClick={() => {
-                  const incompleto = Object.values(nuevoContacto).some((v) => v.trim() === '');
-                  if (incompleto) return alert('Completa todos los campos del contacto');
-                  setContactos([...contactos, nuevoContacto]);
-                  setNuevoContacto({ nombre: '', direccion: '', correo: '', telefono: '', cargo: '' });
-                  setMostrarFilaContacto(false);
-                }}
-              >
-                Guardar
-              </button>
-              <button
-                className="bg-red-500 text-white px-3 py-1 rounded font-semibold"
-                onClick={() => {
-                  setNuevoContacto({ nombre: '', direccion: '', correo: '', telefono: '', cargo: '' });
-                  setMostrarFilaContacto(false);
-                }}
-              >
-                Cancelar
-              </button>
+          <tr className="border-t bg-[#f0faff] transition-all duration-300 ease-in-out">
+            {['nombre', 'direccion', 'correo', 'telefono', 'cargo'].map((field, i) => (
+              <td key={field} className={`p-2 ${i === 0 ? 'w-[140px]' : i === 1 || i === 2 ? 'w-[180px]' : i === 3 ? 'w-[140px]' : 'w-[180px]'}`}>
+                <input
+                  name={field}
+                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#a8d9ce] bg-white text-sm font-[Poppins]"
+                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                  value={nuevoContacto[field]}
+                  onChange={(e) =>
+                    setNuevoContacto({ ...nuevoContacto, [field]: e.target.value })
+                  }
+                />
+              </td>
+            ))}
+            <td className="p-2 w-[160px] align-top">
+              <div className="flex flex-col items-end gap-2">
+                <div>
+
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    className="bg-green-600 text-white px-3 py-1 rounded font-semibold hover:bg-green-700 transition"
+                    onClick={() => {
+                      const incompleto = Object.values(nuevoContacto).some((v) => v.trim() === '');
+                      if (incompleto) return alert('Completa todos los campos del contacto');
+                      setContactos([...contactos, { ...nuevoContacto, seleccionado: false }]);
+                      setNuevoContacto({ nombre: '', direccion: '', correo: '', telefono: '', cargo: '' });
+                      setMostrarFilaContacto(false);
+                    }}
+                  >
+                    Guardar
+                  </button>
+                  <button
+                    className="bg-red-500 text-white px-3 py-1 rounded font-semibold hover:bg-red-600 transition"
+                    onClick={() => {
+                      setNuevoContacto({ nombre: '', direccion: '', correo: '', telefono: '', cargo: '' });
+                      setMostrarFilaContacto(false);
+                    }}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
             </td>
           </tr>
         )}
@@ -203,6 +201,8 @@ const [mostrarFilaContacto, setMostrarFilaContacto] = useState(false);
     </table>
   </section>
 )}
+
+
 
 {/* Paso 1: Sucursales */}
 {step === 2&& (
@@ -443,15 +443,15 @@ const [mostrarFilaContacto, setMostrarFilaContacto] = useState(false);
       </div>
       {/* EN ESTA APARTE SE VE LA NAVEGACION*/}
       <div className="mt-8 flex justify-between">
-        <button
-          onClick={onPrev}
-          disabled={step === 0}
-          className={`px-6 py-2 rounded-lg font-bold ${
-            step === 0 ? 'bg-gray-300 cursor-not-allowed' : 'bg-orange-500 text-white'
-          }`}
-        >
-          Volver
-        </button>
+        
+      <button
+  type="button"
+  onClick={() => window.location.href = "/cliente_ad?tipo=empresa"}
+  className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-bold hover:bg-gray-400"
+>
+  Volver
+</button>
+
 
         {step < steps.length - 1 ? (
           <button

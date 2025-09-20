@@ -10,7 +10,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 
-export default function TicketsTable({ data, columns }) {
+export default function TicketsTable({ data, columns, onRowClick }) {
   const [sorting, setSorting] = React.useState([])
   const [columnFilters, setColumnFilters] = React.useState([])
   const [columnVisibility, setColumnVisibility] = React.useState({})
@@ -81,6 +81,7 @@ export default function TicketsTable({ data, columns }) {
                   borderBottom: "1px solid #eee",
                   cursor: "pointer",
                 }}
+                onClick={() => onRowClick?.(row.original)} // 👈 pasa la fila original
                 onMouseEnter={(e) =>
                   (e.currentTarget.style.backgroundColor = "#e9e9e9")
                 }
