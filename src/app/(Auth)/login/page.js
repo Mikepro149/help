@@ -12,49 +12,39 @@ export default function Login() {
   const [remember, setRemember] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
-  const togglePassword = () => {
-    setShowPassword(!showPassword);
-  };
+  const togglePassword = () => setShowPassword(!showPassword);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
     if (!email || !password) {
-        setError("Email y contraseña son requeridos");
-        return;
-      }
+      setError("Email y contraseña son requeridos");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      // Usa la instancia configurada para enviar la solicitud
       const response = await axiosInstance.post("/login", {
         email,
         password,
         remember,
       });
 
-      console.log('Response:', response); // DEBUG
-    console.log('Cookies:', document.cookie); // DEBUG
+      console.log("Login OK:", response.data);
 
-      // Almacena el token del backend
-      if (typeof window !== "undefined") {
-        localStorage.setItem("sanctum_token", response.data.token);
-      }
-
+      // Laravel ya setea la cookie HttpOnly, no necesitamos js-cookie aquí
       const searchParams = new URLSearchParams(window.location.search);
       const redirect = searchParams.get("redirect") || "/inicio_ad";
       router.push(redirect);
+
     } catch (err) {
-      if (err.response?.status === 422) {
-        setError("Credenciales inválidas");
-      } else if (err.response?.status === 429) {
-        setError("Demasiados intentos. Intenta más tarde");
-      } else {
-        setError(err.response?.data?.message || "Error de conexión");
-      }
+      console.error("Error en login:", err);
+      setError("Credenciales inválidas");
     } finally {
       setIsLoading(false);
     }
@@ -73,17 +63,18 @@ export default function Login() {
               htmlFor="email"
               className="block text-white mb-2 text-left text-lg"
             >
-              Usuario (Correo electronico)
+              Usuario (Correo electrónico)
             </label>
             <input
               type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Correo electronico"
+              placeholder="Correo electrónico"
               required
               className="p-3 border-2 border-gray-300 rounded-full text-base mb-4 w-full"
             />
+
             <label
               htmlFor="password"
               className="block text-white mb-2 text-left text-lg"
@@ -106,6 +97,7 @@ export default function Login() {
                 👁
               </span>
             </div>
+
             <div className="flex items-center text-white text-base mb-5 gap-2">
               <input
                 type="checkbox"
@@ -118,15 +110,19 @@ export default function Login() {
                 Recordar contraseña
               </label>
             </div>
+
             {error && <p className="text-red-500 mb-4">{error}</p>}
+
             <Button type="submit" variant="login" disabled={isLoading}>
-              {isLoading ? "Iniciando..." : "Iniciar Sesion"}
+              {isLoading ? "Iniciando..." : "Iniciar Sesión"}
             </Button>
-            <div className="text-white text-base">
+
+            <div className="text-white text-base mt-4">
               <p>
                 ¿Olvidaste tu contraseña?
                 <br />
-                <Link href="/forgotpassword"
+                <Link
+                  href="/forgotpassword"
                   className="text-[#f89e1b] font-bold hover:underline"
                 >
                   Te ayudamos

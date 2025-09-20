@@ -1,88 +1,67 @@
+// middleware.js
 import { NextResponse } from "next/server";
 
-// Función para verificar token con Laravel
-async function verifyToken(token) {
-  console.log("Token in middleware:", token);
+async function verifyToken(request) {
   try {
+    // Ojo: usa tu dominio real del backend (no localhost si subes a producción)
     const response = await fetch("http://localhost:8000/api/user", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-      },
+      headers: { Accept: "application/json" },
+      credentials: "include", // muy importante para enviar la cookie HttpOnly
     });
-    console.log("Verify response:", response.status); // DEBUG
 
     if (!response.ok) return null;
     return await response.json();
   } catch (error) {
+    console.error("Error verificando token:", error);
     return null;
   }
 }
 
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
-  const token =
-    request.cookies.get("sanctum_token")?.value ||
-    request.headers.get("authorization")?.replace("Bearer ", "");
+  const token = request.cookies.get("sanctum_token")?.value;
 
-  console.log("All cookies:", request.cookies.getAll());
-  console.log("Pathname:", pathname);
-  console.log("Token found:", !!token);
-
-  // Rutas que requieren autenticación
+  // Rutas públicas
   const publicRoutes = ["/login", "/register", "/forgot-password"];
 
-  // Rutas de admin (requieren rol admin)
-  const adminRoutes = ["/inicio_ad"];
+  // Rutas protegidas
+  const protectedRoutes = [
+    "/",
+    "/dashboard",
+    "/inicio_ad",
+    "/manager",
+    "/reports/advanced",
+  ];
 
-  // Rutas de manager (requieren rol manager o admin)
-  const managerRoutes = ["/manager", "/reports/advanced"];
-
-  // Para rutas NO públicas, verificar autenticación completa
-  if (!publicRoutes.some((route) => pathname.startsWith(route))) {
-    if (!token) {
-      const loginUrl = new URL("/login", request.url);
-      return NextResponse.redirect(loginUrl);
-    }
-
-    // AGREGAR ESTO:
-    const user = await verifyToken(token);
-    if (!user) {
-      const loginUrl = new URL("/login", request.url);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
-
-  // GuestGuard - Redirigir usuarios autenticados de rutas de invitados
-  if (publicRoutes.some((route) => pathname.startsWith(route))) {
-    if (token) {
-      const user = await verifyToken(token);
-      if (user) {
-        return NextResponse.redirect(new URL("/inicio", request.url));
-      }
-    }
-  }
-
-  // RoleGuard - Verificar permisos de admin
-  if (adminRoutes.some((route) => pathname.startsWith(route))) {
-    if (!token) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-    const user = await verifyToken(token);
-    if (!user || user.role !== "admin") {
+  // GuestGuard → si el user ya tiene sesión y entra a login/register
+  if (publicRoutes.includes(pathname) && token) {
+    const user = await verifyToken(request);
+    if (user) {
       return NextResponse.redirect(new URL("/inicio", request.url));
     }
   }
 
-  // RoleGuard - Verificar permisos de manager
-  if (managerRoutes.some((route) => pathname.startsWith(route))) {
-    if (!token) {
+  // AuthGuard → si la ruta es protegida y no hay token
+  if (protectedRoutes.includes(pathname) && !token) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  // Si hay token → verificamos validez y rol
+  if (token) {
+    const user = await verifyToken(request);
+
+    // Token inválido → fuera
+    if (!user) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    const user = await verifyToken(token);
-    if (!user || !["admin", "manager"].includes(user.role)) {
+    // RoleGuard admin
+    if (pathname.startsWith("/inicio_ad") && user.role !== "admin") {
+      return NextResponse.redirect(new URL("/inicio", request.url));
+    }
+
+    // RoleGuard manager
+    if (pathname.startsWith("/manager") && !["admin", "manager"].includes(user.role)) {
       return NextResponse.redirect(new URL("/inicio", request.url));
     }
   }
@@ -90,7 +69,7 @@ export async function middleware(request) {
   return NextResponse.next();
 }
 
-// Configurar en qué rutas se ejecuta el middleware
+// Configurar qué rutas ejecutarán el middleware
 export const config = {
   matcher: [
     // Excluir archivos estáticos y API routes
