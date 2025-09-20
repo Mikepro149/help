@@ -13,34 +13,34 @@ export default function forgotpassword(){
       <div className="header">
         <input
           type="text"
-          placeholder="Input 1"
+          placeholder="Correo electrónico"
           value={input1}
           onChange={(e) => setInput1(e.target.value)}
         />
         <input
           type="text"
-          placeholder="Input 2"
+          placeholder="Contraseña"
           value={input2}
           onChange={(e) => setInput2(e.target.value)}
         />
-        <button onClick={() => alert("Botón clickeado")}>Botón</button>
+        <button onClick={() => alert("Botón clickeado")}>Iniciar Sesión</button>
         <div
           className="forgot-link"
           onClick={() => alert("Texto clickeado")}
         >
-          Texto clickeable
+          ¿Olvidaste tu cuenta?
         </div>
       </div>
 
       {/* ⚫ Div gris con caja interna */}
       <div className="main-content">
         <div className="recovery-box">
-          <div className="recovery-title">Título de sección</div>
+          <div className="recovery-title">Recuperar tu contraseña</div>
           <div className="recovery-content">
-            <p>Escribe algo abajo para continuar con la acción que desees.</p>
+            <p>Ingresa tu correo electrónico o número de celular para que nuestro soporte pueda ayudarte</p>
             <input
               type="text"
-              placeholder="Escribe aquí"
+              placeholder="Correo electrónico o número de celular"
               value={recoveryInput}
               onChange={(e) => setRecoveryInput(e.target.value)}
             />
@@ -58,7 +58,7 @@ export default function forgotpassword(){
 
       {/* 🔶 Footer amarillo inferior */}
       <div className="footer">
-        <p>Este es el pie amarillo</p>
+    
       </div>
 
       {/* 🎨 Estilos en línea */}
@@ -85,7 +85,9 @@ export default function forgotpassword(){
           flex-direction: column;
           min-height: 100vh;
           width: 100%;
+          background-color: #5c5c5c; /* ⬅️ Fondo gris */
         }
+
 
         .header,
         .main-content,
@@ -111,7 +113,7 @@ export default function forgotpassword(){
           width: 100%;
           max-width: 380px;
           outline: none;
-          background-color: #888888;
+          background-color: white;
         }
 
         .header button {
@@ -191,6 +193,8 @@ export default function forgotpassword(){
           border: none;
           font-size: 1.2rem;
           margin-bottom: 20px;
+          background-color: white;
+          color: gray;
         }
 
         .recovery-actions {

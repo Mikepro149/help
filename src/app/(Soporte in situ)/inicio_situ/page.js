@@ -1,7 +1,7 @@
 import React from "react";
 import { FaHome,FaTicketAlt, FaHistory, FaBell, FaStar } from 'react-icons/fa';
 
-export default function inicio_ti() {
+export default function inicio_situ() {
   return (
     <div style={{ background: "#f7f7f7", minHeight: "90vh", fontFamily: "sans-serif" }}>
       {/* Container superior */}
