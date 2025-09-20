@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import axiosInstance from "@/lib/axiosInstance";
 import Link from "next/link";
+import axiosInstance from "@/lib/axiosInstance";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -14,46 +14,109 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const response = await axiosInstance.get("/user");
+
+        if (response.status === 200) {
+          const userData = response.data;
+          const redirectUrl =
+            userData.role === "admin"
+              ? "/inicio_ad"
+              : userData.role === "support"
+              ? "/inicio_ti"
+              : userData.role === "on_site_support"
+              ? "/inicio_situ"
+              : "/inicio";
+          
+          window.location.replace(redirectUrl);
+        }
+      } catch (error) {
+        // No hay sesión o hay un error, continuar con el login
+      } finally {
+        setChecking(false);
+      }
+    }
+
+    checkAuth();
+  }, []);
 
   const togglePassword = () => setShowPassword(!showPassword);
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError(null);
 
-  // Simulación de validación básica (puedes reemplazar esto por un fetch a una API si es necesario)
-  if (email === "admin" && password === "123") {
-    router.push("/inicio_ad"); // o la ruta que quieras para el admin
-  } else if (email === "ti" && password === "123") {
-    router.push("/inicio_ti"); // o la ruta para el usuario normal
-  } else if (email === "situ" && password === "123"){
-    router.push("/inicio_situ");
-  } else {
-    alert("Credenciales incorrectas. Intenta de nuevo.");
+    try {
+      const response = await axiosInstance.post("/login", {
+        email,
+        password,
+      });
+
+      console.log("✅ Login exitoso!", response.data);
+      
+      const { role } = response.data.user;
+
+      let redirectUrl;
+      switch (role) {
+        case "admin":
+          redirectUrl = "/inicio_ad";
+          break;
+        case "support":
+          redirectUrl = "/inicio_ti";
+          break;
+        case "on_site_support":
+          redirectUrl = "/inicio_situ";
+          break;
+        default:
+          redirectUrl = "/inicio";
+      }
+
+      window.location.replace(redirectUrl);
+    } catch (err) {
+      console.error("💥 Error de conexión:", err);
+      setError(
+        err.response?.data?.message || "Error al iniciar sesión"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (checking) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[#454545]">
+        <div className="text-white">Verificando sesión...</div>
+      </div>
+    );
   }
-};
-
 
   return (
-<div className="flex h-screen min-h-[600px] w-full bg-[#454545]">
-  {/* LADO IZQUIERDO: fondo amarillo + triángulo al borde derecho */}
-  <div className="flex-1 min-w-[300px] bg-[#f89e1b] flex justify-end items-center">
-    {/* TRIÁNGULO GRIS QUE APUNTA A LA IZQUIERDA */}
-    <div className="w-0 h-0 border-y-[476px] border-y-transparent border-r-[400px] border-r-[#454545]"></div>
-  </div>
+    <div className="flex h-screen min-h-[600px] w-full bg-[#454545]">
+      {/* LADO IZQUIERDO */}
+      <div className="flex-1 min-w-[300px] bg-[#f89e1b] flex justify-end items-center">
+        <div className="w-0 h-0 border-y-[476px] border-y-transparent border-r-[400px] border-r-[#454545]"></div>
+      </div>
 
-  {/* LADO DERECHO: formulario */}
-  <div className="flex-1 min-w-[300px] bg-[#454545] flex justify-center items-center">
-        
+      {/* LADO DERECHO */}
+      <div className="flex-1 min-w-[300px] bg-[#454545] flex justify-center items-center">
         <div className="bg-[#454545] p-5 rounded-lg text-center w-4/5 max-w-[400px] flex flex-col justify-center max-h-[500px]">
           <h2 className="font-sans py-5 text-white text-2xl md:text-3xl bg-[#5c5c5c] mb-6 rounded-lg font-bold">
             INICIO DE SESION
           </h2>
           <form onSubmit={handleSubmit}>
-            <label htmlFor="email" className="block text-white mb-2 text-left text-lg font-bold">
+            <label
+              htmlFor="email"
+              className="block text-white mb-2 text-left text-lg font-bold"
+            >
               Usuario (Correo electronico)
             </label>
             <input
-              type="text"
+              type="email"
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -62,7 +125,10 @@ const handleSubmit = (e) => {
               className="p-3 border-2 border-gray-300 rounded-full text-base mb-4 w-full bg-white font-bold"
             />
 
-            <label htmlFor="password" className="block text-white mb-2 text-left text-lg font-bold">
+            <label
+              htmlFor="password"
+              className="block text-white mb-2 text-left text-lg font-bold"
+            >
               Contraseña
             </label>
             <div className="relative w-full">
@@ -95,7 +161,7 @@ const handleSubmit = (e) => {
               </label>
             </div>
 
-            {error && <p className="text-red-500 mb-4">{error}</p>}
+            {error && <p className="text-red-500 mb-4 text-sm">{error}</p>}
 
             <Button type="submit" variant="login" disabled={isLoading}>
               {isLoading ? "Iniciando..." : "Iniciar Sesión"}

@@ -3,76 +3,116 @@ import { NextResponse } from "next/server";
 
 async function verifyToken(request) {
   try {
-    // Ojo: usa tu dominio real del backend (no localhost si subes a producción)
+    // Obtener TODAS las cookies del request
+    const cookieHeader = request.headers.get("cookie");
+    console.log("🍪 Cookies enviadas al backend:", cookieHeader);
+
+    if (!cookieHeader || !cookieHeader.includes("access_token")) {
+      console.log("❌ No hay access_token en las cookies");
+      return null;
+    }
+
     const response = await fetch("http://localhost:8000/api/user", {
-      headers: { Accept: "application/json" },
-      credentials: "include", // muy importante para enviar la cookie HttpOnly
+      headers: {
+        Accept: "application/json",
+        // Reenviar TODAS las cookies al backend
+        ...(cookieHeader && { Cookie: cookieHeader }),
+      },
     });
 
-    if (!response.ok) return null;
-    return await response.json();
+    console.log("📡 Response status:", response.status);
+    console.log("📡 Response ok:", response.ok);
+
+    if (!response.ok) {
+      console.log("❌ Token inválido o expirado");
+      return null;
+    }
+
+    const userData = await response.json();
+    console.log("✅ Usuario autenticado:", userData);
+    return userData;
   } catch (error) {
-    console.error("Error verificando token:", error);
+    console.error("❌ Error verificando token:", error);
     return null;
   }
 }
 
 export async function middleware(request) {
   const { pathname } = request.nextUrl;
-  const token = request.cookies.get("sanctum_token")?.value;
+  console.log("🛡️ Middleware ejecutándose en:", pathname);
 
   // Rutas públicas
-  const publicRoutes = ["/login", "/register", "/forgot-password"];
+  const publicRoutes = ["/login", "/register", "/forgotpassword"];
 
   // Rutas protegidas
   const protectedRoutes = [
-    "/",
-    "/dashboard",
+    "/inicio",
     "/inicio_ad",
+    "/inicio_ti",
+    "/inicio_situ",
+    "/dashboard",
     "/manager",
-    "/reports/advanced",
+    "/reports",
   ];
 
-  // GuestGuard → si el user ya tiene sesión y entra a login/register
-  if (publicRoutes.includes(pathname) && token) {
-    const user = await verifyToken(request);
-    if (user) {
-      return NextResponse.redirect(new URL("/inicio", request.url));
-    }
+  // Si es ruta pública, permitir acceso
+  if (publicRoutes.includes(pathname)) {
+    console.log("🟢 Ruta pública permitida:", pathname);
+    return NextResponse.next();
   }
 
-  // AuthGuard → si la ruta es protegida y no hay token
-  if (protectedRoutes.includes(pathname) && !token) {
+  // Si es la raíz, redirigir a login
+  if (pathname === "/") {
+    console.log("🔄 Redirigiendo desde raíz a /login");
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Si hay token → verificamos validez y rol
-  if (token) {
+  // Para rutas protegidas, verificar autenticación
+  if (protectedRoutes.some((route) => pathname.startsWith(route))) {
+    console.log("🔒 Verificando acceso a ruta protegida:", pathname);
     const user = await verifyToken(request);
 
-    // Token inválido → fuera
+    // Si no hay usuario válido, redirigir a login
     if (!user) {
+      console.log("❌ Usuario no autenticado, redirigiendo a /login");
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    // RoleGuard admin
-    if (pathname.startsWith("/inicio_ad") && user.role !== "admin") {
-      return NextResponse.redirect(new URL("/inicio", request.url));
-    }
+    console.log("✅ Usuario autenticado con rol:", user.role);
 
-    // RoleGuard manager
-    if (pathname.startsWith("/manager") && !["admin", "manager"].includes(user.role)) {
-      return NextResponse.redirect(new URL("/inicio", request.url));
+    // RoleGuard - verificar permisos por rol
+    const roleRoutes = {
+      "/inicio_ad": "admin",
+      "/inicio_ti": "support",
+      "/inicio_situ": "on_site_support",
+      "/manager": ["admin", "manager", "manager_client"],
+    };
+
+    for (const [route, allowedRoles] of Object.entries(roleRoutes)) {
+      if (pathname.startsWith(route)) {
+        const roles = Array.isArray(allowedRoles)
+          ? allowedRoles
+          : [allowedRoles];
+        console.log(
+          `🎭 Verificando rol para ${route}:`,
+          roles,
+          "vs",
+          user.role
+        );
+
+        if (!roles.includes(user.role)) {
+          console.log("❌ Rol no autorizado, redirigiendo a /login");
+          return NextResponse.redirect(new URL("/login", request.url));
+        }
+        console.log("✅ Rol autorizado");
+      }
     }
   }
 
+  console.log("✅ Acceso permitido a:", pathname);
   return NextResponse.next();
 }
 
-// Configurar qué rutas ejecutarán el middleware
 export const config = {
-  matcher: [
-    // Excluir archivos estáticos y API routes
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-  ],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|.*\\..*|_next).*)"],
 };
