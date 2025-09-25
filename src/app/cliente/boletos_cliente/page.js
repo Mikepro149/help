@@ -82,7 +82,8 @@ function DataTableTickets() {
   // Función para cargar datos del localStorage
   const loadDataFromStorage = () => {
     try {
-      const savedData = localStorage.getItem('boletos_cliente_data');
+      if (typeof window === 'undefined') return initialData;
+      const savedData = window.localStorage.getItem('boletos_cliente_data');
       return savedData ? JSON.parse(savedData) : initialData;
     } catch (error) {
       console.error('Error loading data from localStorage:', error);
@@ -90,10 +91,13 @@ function DataTableTickets() {
     }
   };
 
-  // Función para guardar datos en localStorage
+  // Función para guardar datos en localStorage y notificar
   const saveDataToStorage = (newData) => {
     try {
-      localStorage.setItem('boletos_cliente_data', JSON.stringify(newData));
+      if (typeof window === 'undefined') return;
+      window.localStorage.setItem('boletos_cliente_data', JSON.stringify(newData));
+      // Notificar a otros componentes que los tickets cambiaron
+      window.dispatchEvent(new CustomEvent('tickets:update', { detail: { tickets: newData } }));
     } catch (error) {
       console.error('Error saving data to localStorage:', error);
     }
@@ -111,7 +115,7 @@ function DataTableTickets() {
   // Efecto para cargar datos del localStorage al montar el componente
   React.useEffect(() => {
     const savedData = loadDataFromStorage();
-    if (savedData.length > 0) {
+    if (Array.isArray(savedData) && savedData.length > 0) {
       setData(savedData);
     }
   }, []);
@@ -183,6 +187,9 @@ function DataTableTickets() {
     // Agregar el nuevo ticket a la lista
     const updatedData = [...data, newTicket];
     updateData(updatedData);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('tickets:created', { detail: { ticket: newTicket, tickets: updatedData } }));
+    }
     
     // Mostrar mensaje de éxito
     alert(`Ticket ${newTicket.id} creado exitosamente!`);

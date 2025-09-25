@@ -1,7 +1,40 @@
+"use client";
 import React from "react";
 import { FaHome,FaTicketAlt, FaHistory, FaBell, FaUsers } from 'react-icons/fa';
 
 export default function InicioCliente() {
+  const getTickets = () => {
+    if (typeof window === 'undefined') return [];
+    try {
+      const raw = window.localStorage.getItem('boletos_cliente_data');
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const [counts, setCounts] = React.useState({ proceso: 0, resueltos: 0 });
+
+  const computeCounts = (tickets) => {
+    const toLower = (v) => (v || '').toString().toLowerCase();
+    const proceso = tickets.filter(t => ["en proceso", "proceso", "activo", "in_progress"].includes(toLower(t.estado))).length;
+    const resueltos = tickets.filter(t => ["resuelto", "resolved"].includes(toLower(t.estado))).length;
+    setCounts({ proceso, resueltos });
+  };
+
+  React.useEffect(() => {
+    computeCounts(getTickets());
+    const onUpdate = (e) => computeCounts(e?.detail?.tickets || getTickets());
+    const onStorage = (e) => { if (e.key === 'boletos_cliente_data') computeCounts(getTickets()); };
+    window.addEventListener('tickets:update', onUpdate);
+    window.addEventListener('tickets:created', onUpdate);
+    window.addEventListener('storage', onStorage);
+    return () => {
+      window.removeEventListener('tickets:update', onUpdate);
+      window.removeEventListener('tickets:created', onUpdate);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-gray-100 font-sans p-0">
@@ -23,20 +56,17 @@ export default function InicioCliente() {
         </div>
 
         {/* Cartas */}
-        <div className="w-full max-w-[1200px] mt-10 flex flex-wrap justify-center gap-8">
-          {[
-            { icon: <FaTicketAlt size={48} color="#000" />, title: "Mis tickets activos", value: 3 },
-            { icon: <FaHistory size={48} color="#000" />, title: "Historial de tickets", value: 12 },
-            { icon: <FaBell size={48} color="#000" />, title: "Tickets Urgentes", value: 1 },
-            { icon: <FaUsers size={48} color="#000" />, title: "Soporte recibido", value: "" },
-          ].map((card, idx) => (
-            <div key={idx} className="bg-orange-300 rounded-xl w-[250px] h-[200px] flex flex-col items-center justify-around shadow text-center">
-              <div className="text-4xl">{card.icon}</div>
-              <div className="font-bold text-lg">{card.title}</div>
-              {card.value !== "" && <div className="text-3xl font-bold text-gray-800">{card.value}</div>}
-              <button className="bg-white text-orang e-300 rounded-md px-8 py-2 font-bold shadow text-lg hover:bg-orange-100">Ver</button>
-            </div>
-          ))}
+        <div className="w-full max-w-[1200px] mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="bg-orange-300 rounded-xl min-h-[180px] flex flex-col items-center justify-center shadow text-center p-4">
+            <div className="text-4xl mb-2"><FaBell size={48} color="#000" /></div>
+            <div className="font-bold text-lg">Tickets en Proceso</div>
+            <div className="text-3xl font-bold text-gray-800 mt-2">{counts.proceso}</div>
+          </div>
+          <div className="bg-orange-300 rounded-xl min-h-[180px] flex flex-col items-center justify-center shadow text-center p-4">
+            <div className="text-4xl mb-2"><FaHistory size={48} color="#000" /></div>
+            <div className="font-bold text-lg">Tickets Resueltos</div>
+            <div className="text-3xl font-bold text-gray-800 mt-2">{counts.resueltos}</div>
+          </div>
         </div>
 
         {/* Mensajes de tickets */}

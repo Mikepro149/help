@@ -14,6 +14,18 @@ const sections = [
 ];
 
 const Sidebar = ({ onProfile, onLogout }) => {
+	const handleLogout = () => {
+		try {
+			// Limpiar posibles datos de sesión
+			localStorage.removeItem('boletos_cliente_data');
+			localStorage.removeItem('auth_token');
+			sessionStorage.clear();
+		} catch (_) {}
+		// Redirigir a login
+		if (typeof window !== 'undefined') {
+			window.location.href = '/login';
+		}
+	};
 	return (
 		<aside
 			style={{
@@ -92,7 +104,7 @@ const Sidebar = ({ onProfile, onLogout }) => {
 					Perfil
 				</button>
 				<button
-					onClick={onLogout}
+					onClick={onLogout || handleLogout}
 					style={{
 						width: "100%",
 						padding: "12px 0",
