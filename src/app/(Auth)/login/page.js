@@ -14,7 +14,7 @@ export default function Login() {
   useEffect(() => {
     setEmail("prueba@ejemplo.com");
     setPassword("12345678");
-    setRemember(true);
+    setRemember(true);  
   }, []);
 
   const togglePassword = () => {
@@ -31,6 +31,8 @@ const handleSubmit = (e) => {
     router.push("/inicio_ti"); // o la ruta para el usuario normal
   } else if (email === "situ" && password === "123"){
     router.push("/inicio_situ");
+  } else if (email === "cliente" && password === "123"){
+    router.push("/cliente/inicio_cliente");  
   } else {
     alert("Credenciales incorrectas. Intenta de nuevo.");
   }
