@@ -1,21 +1,18 @@
 "use client"
 
 import * as React from "react"
-import {
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
+import { flexRender, getCoreRowModel, useReactTable } from "@tanstack/react-table"
 
 import { FaUsers } from "react-icons/fa"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+
+import DialogCn from "@/components/shared/dialogcn_prueba";
+import { TabsCn } from "@/components/shared/tabscn";
+import { useState } from "react";
+import TicketsTable from "@/components/shared/tablecn_prueba1";
+import { Users, FileSearch } from 'lucide-react'
+import Link from "next/link";
+import EditableTable from "@/components/shared/edittablecn";
 
 const empresaData = [
   {
@@ -67,6 +64,28 @@ const personaData = [
 
 export default function Clientes() {
   const [tipoCliente, setTipoCliente] = React.useState("empresa")
+
+  const steps_empresa = ['Empresa', 'Contactos', 'Sucursal', 'Áreas', 'Datos de acceso'];
+  const [step, setStep] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [secondTableData, setSecondTableData] = useState([]);
+  const [secondTableColumns, setSecondTableColumns] = useState([]);
+
+   // Estados
+  const [empresa, setEmpresa] = useState({ nombre: "", ruc: "", direccion: "", plan: "" });
+  const [contactos, setContactos] = useState([]);
+  const [nuevoContacto, setNuevoContacto] = useState({ nombre: "", direccion: "", correo: "", telefono: "", cargo: "" });
+
+  const [sucursales, setSucursales] = useState([]);
+  const [nuevaSucursal, setNuevaSucursal] = useState({ sucursal: "", direccion: "", contacto: "", telefono: "", correo: "" });
+
+  const [areas, setAreas] = useState([]);
+  const [nuevaArea, setNuevaArea] = useState({ area: "", contacto: "", telefono: "", correo: "" });
+
+  const [acceso, setAcceso] = useState({ usuario: "", contraseña: "", confirmar: "" });
+  const [mostrarFilaContacto, setMostrarFilaContacto] = useState(false);
+  const [secondOpen, setSecondOpen] = useState(false);
 
   const columns = tipoCliente === "empresa"
     ? [
@@ -233,6 +252,8 @@ export default function Clientes() {
           </TableBody>
         </Table>
       </div>
+
+      
     </div>
   )
 }
