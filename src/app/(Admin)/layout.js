@@ -1,7 +1,7 @@
 "use client";
 
 import { SidebarProvider } from "@/components/ui/sidebar";
-import Sidebar from "@/components/sidebar/sidebar"; // este es el sidebar real
+import Sidebar from "@/components/Sidebar"; // este es el sidebar real
 import React from "react";
 
 export default function AdminLayout({ children }) {
