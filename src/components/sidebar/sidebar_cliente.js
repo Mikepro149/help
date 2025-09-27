@@ -6,21 +6,24 @@ import { FaHome, FaTicketAlt, FaUsers, FaBoxOpen, FaClipboardList, FaUserCircle,
 
 
 const sections = [
-	{ name: "Home", href: "/inicio_ad", icon: <FaHome style={{ marginRight: 12 }} /> },
-	{ name: "Tickets", href: "/boletos_ad", icon: <FaTicketAlt style={{ marginRight: 12 }} /> },
-	{ name: "Clientes", href: "/cliente_ad", icon: <FaUsers style={{ marginRight: 12 }} /> },
-	{ name: "Empresa", href: "/empresa_ad", icon: <FaBoxOpen style={{ marginRight: 12 }} /> },
-	{ name: "Plan de Soporte", href: "/planSoporte_ad", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
+	{ name: "Home", href: "/cliente/inicio_cliente", icon: <FaHome style={{ marginRight: 12 }} /> },
+	{ name: "Tickets", href: "/cliente/boletos_cliente", icon: <FaTicketAlt style={{ marginRight: 12 }} /> },
+	{ name: "Clientes", href: "/cliente/clientes_cliente", icon: <FaUsers style={{ marginRight: 12 }} /> },
+	{ name: "Productos", href: "/cliente/productos_cliente", icon: <FaBoxOpen style={{ marginRight: 12 }} /> },
+	{ name: "Plan de Soporte", href: "/cliente/planSoporte_cliente", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
 ];
 
 const Sidebar = ({ onProfile, onLogout }) => {
 	const handleLogout = () => {
 		try {
+			// Limpiar posibles datos de sesión
+			localStorage.removeItem('boletos_cliente_data');
 			localStorage.removeItem('auth_token');
 			sessionStorage.clear();
 		} catch (_) {}
+		// Redirigir a login
 		if (typeof window !== 'undefined') {
-			window.location.href = '/(Auth)/login';
+			window.location.href = '/login';
 		}
 	};
 	return (
