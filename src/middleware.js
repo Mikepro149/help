@@ -1,59 +1,33 @@
 // middleware.js
 import { NextResponse } from "next/server";
 
-async function verifyToken(request) {
+async function verifyUser(request) {
   try {
     const cookieHeader = request.headers.get("cookie") || "";
-    
-    if (!cookieHeader || !cookieHeader.includes("access_token")) {
-      console.log(">>> DEBUG: no access_token in cookies");
-      return null;
-    }
 
-    // 🔧 DECODIFICAR LA COOKIE
-    const decodedCookieHeader = decodeURIComponent(cookieHeader);
-
-    // Extraer el token específico
-    const tokenMatch = decodedCookieHeader.match(/access_token=([^;]+)/);
-    const token = tokenMatch ? tokenMatch[1] : null;
-
-    if (!token) {
-      console.log(">>> DEBUG: No se pudo extraer el token");
+    if (!cookieHeader.includes("laravel_session")) {
+      console.log(">>> DEBUG: No laravel_session cookie presente");
       return null;
     }
 
     const response = await fetch("http://localhost:8000/api/user", {
+      method: "GET",
       headers: {
         Accept: "application/json",
-        Cookie: decodedCookieHeader,
-        // También prueba con Authorization header
-        Authorization: `Bearer ${token}`,
+        Cookie: cookieHeader, // 🔥 reenviamos la cookie tal cual
       },
     });
 
-    console.log(
-      ">>> DEBUG fetch to backend status:",
-      response.status,
-      "ok:",
-      response.ok
-    );
+    console.log(">>> DEBUG fetch /api/user status:", response.status);
 
     if (!response.ok) {
-      console.log(">>> DEBUG: Backend authentication failed");
       return null;
     }
 
-    const text = await response.text();
-
-    try {
-      const parsed = JSON.parse(text);
-      return parsed.user ? parsed.user : parsed;
-    } catch (e) {
-      console.error(">>> DEBUG JSON parse error:", e);
-      return null;
-    }
+    const data = await response.json();
+    return data.user || null;
   } catch (error) {
-    console.error(">>> DEBUG Error verifying token:", error);
+    console.error(">>> DEBUG Error en verifyUser:", error);
     return null;
   }
 }
@@ -62,55 +36,55 @@ export async function middleware(request) {
   const { pathname } = request.nextUrl;
   console.log("🔍 Middleware - ruta:", pathname);
 
-  // Excluir rutas estáticas explícitamente
+  // Excluir assets, imágenes y APIs internas de Next
   if (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
-    pathname.includes('.') // archivos estáticos (css, js, images, etc.)
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname.includes(".")
   ) {
     return NextResponse.next();
   }
 
+  // Rutas públicas
   const publicRoutes = ["/login", "/register", "/forgotpassword"];
   if (publicRoutes.includes(pathname)) {
-    console.log("🔍 Verificando si usuario ya está logueado en ruta pública:", pathname);
-    
-    // Verificar si el usuario ya está autenticado
-    const user = await verifyToken(request);
-    
+    const user = await verifyUser(request);
+
     if (user) {
-      console.log(`🔄 Usuario ${user.name} (${user.role}) ya logueado, redirigiendo desde ${pathname}`);
-      
-      // Redirigir según el rol del usuario
+      console.log(
+        `🔄 Usuario ${user.name} (${user.role}) ya logueado, redirigiendo`
+      );
+
       const roleRedirects = {
-        "admin": "/inicio_ad",
-        "support": "/inicio_ti", 
-        "on_site_support": "/inicio_situ",
-        "manager": "/inicio_manager",
-        "manager_worker": "/inicio_worker"
+        admin: "/dashboard/home",
+        support: "/dashboard/home",
+        on_site_support: "/dashboard/home",
+        manager: "/dashboard/home",
+        manager_worker: "/dashboard/home",
       };
-      
-      const redirectUrl = roleRedirects[user.role] || "/inicio_ti"; // fallback
-      console.log(`➡️ Redirigiendo a: ${redirectUrl}`);
-      
-      return NextResponse.redirect(new URL(redirectUrl, request.url));
+
+      return NextResponse.redirect(
+        new URL(roleRedirects[user.role] || "/dashboard/home", request.url)
+      );
     }
-    
-    console.log("🟢 Usuario no logueado, permitiendo acceso a:", pathname);
+
     return NextResponse.next();
   }
 
+  // Ruta raíz
   if (pathname === "/") {
-    console.log("🔄 Redirigiendo raíz → /login");
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
+  // 🔒 Rutas protegidas por rol
   const roleRoutes = {
-    "/inicio_ad": ["admin"],
-    "/inicio_ti": ["support"],
-    "/inicio_situ": ["on_site_support"],
-    "/inicio_manager": ["manager"],
-    "/inicio_worker": ["manager_worker"],
+    "/dashboard/home": [
+      "admin",
+      "support",
+      "on_site_support",
+      "manager",
+      "manager_worker",
+    ],
   };
 
   const matchedRoute = Object.keys(roleRoutes).find((route) =>
@@ -118,40 +92,27 @@ export async function middleware(request) {
   );
 
   if (matchedRoute) {
-    console.log("🔒 Verificando acceso a:", matchedRoute);
-
-    const user = await verifyToken(request);
+    const user = await verifyUser(request);
 
     if (!user) {
-      console.log("❌ Usuario no autenticado, redirigiendo a /login");
+      console.log("❌ No autenticado → redirect /login");
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    console.log(`✅ Usuario ${user.name} (${user.role}) accediendo a ${pathname}`);
-
     const allowedRoles = roleRoutes[matchedRoute];
-    
     if (!allowedRoles.includes(user.role)) {
-      console.log(
-        `🚫 Rol '${user.role}' NO autorizado para '${matchedRoute}'`
-      );
+      console.log(`🚫 Rol ${user.role} no autorizado en ${pathname}`);
       return NextResponse.redirect(new URL("/unauthorized", request.url));
     }
+
+    console.log(`✅ ${user.name} (${user.role}) accede a ${pathname}`);
   }
 
   return NextResponse.next();
 }
 
-// Configuración mejorada para Next.js 15
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    '/((?!api|_next/static|_next/image|favicon.ico).*)',
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
   ],
 };
