@@ -10,6 +10,15 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table" // <- Usa los componentes semánticos
+
 export default function TicketsTable({ data, columns, onRowClick }) {
   const [sorting, setSorting] = React.useState([])
   const [columnFilters, setColumnFilters] = React.useState([])
@@ -31,95 +40,57 @@ export default function TicketsTable({ data, columns, onRowClick }) {
   })
 
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        overflow: "hidden",
-        boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
-      }}
-    >
-      <table
-        style={{
-          width: "100%",
-          borderCollapse: "collapse",
-          fontSize: "14px",
-          fontFamily: "Arial, sans-serif",
-        }}
-      >
-        {/* --- Encabezado --- */}
-        <thead style={{ backgroundColor: "#d6d6d6" }}>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} style={{ borderBottom: "1px solid #ccc" }}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  style={{
-                    padding: "10px",
-                    textAlign: "center", // ✅ centrado
-                    fontWeight: "600",
-                    color: "#111",
-                  }}
-                >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-
-        {/* --- Cuerpo --- */}
-        <tbody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row, i) => (
-              <tr
-                key={row.id}
-                style={{
-                  backgroundColor: i % 2 === 0 ? "#fff" : "#f2f2f2", // ✅ pares gris claro
-                  borderBottom: "1px solid #eee",
-                  cursor: "pointer",
-                }}
-                onClick={() => onRowClick?.(row.original)} // 👈 pasa la fila original
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#e9e9e9")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor =
-                    i % 2 === 0 ? "#fff" : "#f2f2f2")
-                }
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    style={{
-                      padding: "8px 10px",
-                      color: "#333",
-                      textAlign: "center", // ✅ centrado
-                    }}
+    <div className="w-full overflow-hidden font-[Poppins]">
+      <div className="overflow-x-auto border border-gray-300 rounded-lg bg-white shadow-sm">
+        <Table className="min-w-[900px] text-center bg-white">
+          <TableHeader className="sticky top-0 z-10 bg-orange-300">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id} className="border-b border-gray-300">
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="px-4 py-3 font-semibold text-gray-700 whitespace-nowrap text-center"
                   >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
                 ))}
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td
-                colSpan={columns.length}
-                style={{
-                  textAlign: "center",
-                  padding: "20px",
-                  color: "#777",
-                }}
-              >
-                Sin datos
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+              </TableRow>
+            ))}
+          </TableHeader>
+
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row, i) => (
+                <TableRow
+                  key={row.id}
+                  onClick={() => onRowClick?.(row.original)}
+                  className={`transition-colors cursor-pointer ${i % 2 === 0 ? "bg-white" : "bg-gray-100"} hover:bg-blue-100`}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className="px-4 py-3 border-b border-gray-300 text-sm overflow-hidden text-ellipsis whitespace-nowrap min-w-[100px] text-center"
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="text-center py-6 text-gray-500"
+                >
+                  No hay datos para mostrar
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   )
 }

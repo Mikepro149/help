@@ -2,460 +2,172 @@
 
 import { useState } from 'react';
 import { TabsCn } from '@/components/shared/tabscn';
-import TableCn from '@/components/shared/tablecn';
 import DialogCn from '@/components/shared/dialogcn';
 
 const steps = ['Empresa', 'Contactos', 'Sucursal', 'Áreas', 'Datos de acceso'];
 
-
-
 export default function EmpresaAd() {
   const [step, setStep] = useState(0);
 
+  // Estados generales
   const [empresa, setEmpresa] = useState({ nombre: '', ruc: '', direccion: '', plan: '' });
+  
+  // Estados unificados para tablas dinámicas
+  const [contactos, setContactos] = useState([]);
+  const [nuevoContacto, setNuevoContacto] = useState({
+    nombre: '', direccion: '', correo: '', telefono: '', cargo: '', seleccionado: false,
+  });
+  const [mostrarContacto, setMostrarContacto] = useState(false);
 
   const [sucursales, setSucursales] = useState([
     { sucursal: 'Sucursal Lima', direccion: 'Av. Arequipa 123', contacto: 'Ana Torres', telefono: '987123456', correo: 'ana@example.com' },
   ]);
   const [nuevaSucursal, setNuevaSucursal] = useState({ sucursal: '', direccion: '', contacto: '', telefono: '', correo: '' });
- const [mostrarFormularioSucursal, setMostrarFormularioSucursal] = useState(false);
-
-//////////
-const [mostrarFilaSucursal, setMostrarFilaSucursal] = useState(false);
-///////////////////////
-
+  const [mostrarSucursal, setMostrarSucursal] = useState(false);
 
   const [areas, setAreas] = useState([
     { area: 'Administración', contacto: 'Luis Vega', telefono: '981234567', correo: 'luis@example.com' },
   ]);
   const [nuevaArea, setNuevaArea] = useState({ area: '', contacto: '', telefono: '', correo: '' });
-//////
-const [mostrarFilaArea, setMostrarFilaArea] = useState(false);
-////////
-const [contactos, setContactos] = useState([]);
-
-const [nuevoContacto, setNuevoContacto] = useState({ nombre: '', direccion: '', correo: '', telefono: '', cargo: '' });
-const [mostrarFilaContacto, setMostrarFilaContacto] = useState(false);
-////
-
-
+  const [mostrarArea, setMostrarArea] = useState(false);
 
   const [acceso, setAcceso] = useState({ usuario: '', contraseña: '', confirmar: '' });
 
-  const sucursalColumns = [
-    { header: 'Sucursal', accessor: 'sucursal' },
-    { header: 'Dirección', accessor: 'direccion' },
-    { header: 'Contacto', accessor: 'contacto' },
-    { header: 'Teléfono', accessor: 'telefono' },
-    { header: 'Correo', accessor: 'correo' },
-  ];
+  // 🔹 Función genérica para manejar inputs
+  const handleChange = (setter) => (e) => {
+    const { name, value } = e.target;
+    setter((prev) => ({ ...prev, [name]: value }));
+  };
 
-  const areaColumns = [
-    { header: 'Área', accessor: 'area' },
-    { header: 'Contacto', accessor: 'contacto' },
-    { header: 'Teléfono', accessor: 'telefono' },
-    { header: 'Correo', accessor: 'correo' },
-  ];
-
-  const onNext = () => step < steps.length - 1 && setStep(step + 1);
-  const onPrev = () => step > 0 && setStep(step - 1);
+  // 🔹 Función unificada para guardar filas en tablas
+  const guardarFila = (lista, setLista, nuevoItem, setNuevoItem, setMostrarFila, incluirSeleccionado = false) => {
+    const incompleto = Object.entries(nuevoItem).some(
+      ([key, value]) => key !== 'seleccionado' && !value.trim()
+    );
+    
+    if (incompleto) return alert('Completa todos los campos');
+    
+    setLista([...lista, nuevoItem]);
+    const resetItem = Object.fromEntries(
+      Object.keys(nuevoItem).map((k) => [k, k === 'seleccionado' ? false : ''])
+    );
+    setNuevoItem(resetItem);
+    setMostrarFila(false);
+  };
 
   const onSubmit = () => {
     if (!acceso.usuario || !acceso.contraseña || acceso.contraseña !== acceso.confirmar) {
-      alert('Verifica los datos de acceso antes de registrar.');
-      return;
+      return alert('Verifica los datos de acceso antes de registrar.');
     }
-
-    const datos = { empresa, sucursales, areas, acceso };
+    const datos = { empresa, contactos, sucursales, areas, acceso };
     console.log('Datos enviados:', datos);
     alert('Empresa registrada correctamente.');
   };
 
-  return (
-    <div className="max-w-5xl mx-auto my-12 bg-[#fff8f0] p-8 rounded-xl shadow">
-      <h2 className="text-2xl font-bold text-center mb-6">Registrar Empresa - {steps[step]}</h2>
-
-      <TabsCn steps={steps} currentStep={step} onStepChange={setStep} />
-
-      <div className="mt-8">
-        {/* Paso 0: Empresa */}
-        {step === 0 && (
+  const renderStep = () => {
+    switch (step) {
+      case 0:
+        return (
           <section className="grid grid-cols-2 gap-4">
-            {['nombre', 'ruc', 'direccion', 'plan'].map((field) => (
+            {Object.keys(empresa).map((field) => (
               <input
                 key={field}
                 name={field}
-                className="p-2 rounded border border-gray-300"
                 placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                className="p-2 rounded border border-gray-300"
                 value={empresa[field]}
-                onChange={(e) => setEmpresa({ ...empresa, [field]: e.target.value })}
+                onChange={handleChange(setEmpresa)}
               />
             ))}
           </section>
-        )}
+        );
 
-{/* Paso 1: Contactos */}
-{step === 1 && (
-  <section>
-    <h3 className="text-lg font-semibold mb-2">Contactos de referencia</h3>
-    <table className="w-full table-fixed border border-gray-300 rounded-lg overflow-hidden text-sm font-[Poppins]">
-      <thead className="bg-gray-100 text-left">
-        <tr>
-          <th className="p-2 w-[140px]">Nombre</th>
-          <th className="p-2 w-[180px]">Dirección</th>
-          <th className="p-2 w-[180px]">Correo</th>
-          <th className="p-2 w-[140px]">Teléfono</th>
-          <th className="p-2 w-[180px]">Cargo</th>
-          <th className="p-2 w-[160px] text-right">
-          <button
-            className={`bg-blue-600 text-white px-2 py-1 rounded font-bold text-sm hover:bg-blue-700 transition ${
-              mostrarFilaContacto ? 'opacity-50 cursor-not-allowed' : ''
-            }`}
-            onClick={() => setMostrarFilaContacto(true)}
-            disabled={mostrarFilaContacto}
-          >
-            ➕
-          </button>
-        </th>
-        </tr>
-      </thead>
-      <tbody>
-        {contactos.length === 0 && !mostrarFilaContacto && (
-          <tr>
-            <td colSpan={6} className="p-4 text-center text-gray-500 italic">
-              No hay contactos registrados
-            </td>
-          </tr>
-        )}
+      case 1:
+        return (
+          <DataTable
+            title="Contactos de referencia"
+            columns={['nombre', 'direccion', 'correo', 'telefono', 'cargo']}
+            data={contactos}
+            setData={setContactos}
+            nuevo={nuevoContacto}
+            setNuevo={setNuevoContacto}
+            mostrar={mostrarContacto}
+            setMostrar={setMostrarContacto}
+            onSave={() => guardarFila(contactos, setContactos, nuevoContacto, setNuevoContacto, setMostrarContacto, true)}
+            conCheckbox={true}
+          />
+        );
 
-        {contactos.map((c, index) => (
-          <tr key={index} className="border-t">
-            <td className="p-2 w-[140px]">{c.nombre}</td>
-            <td className="p-2 w-[180px]">{c.direccion}</td>
-            <td className="p-2 w-[180px]">{c.correo}</td>
-            <td className="p-2 w-[140px]">{c.telefono}</td>
-            <td className="p-2 w-[180px]">{c.cargo}</td>
-            <td className="p-2 w-[160px] text-right">
+      case 2:
+        return (
+          <DataTable
+            title="Agregar Sucursales"
+            columns={['sucursal', 'direccion', 'contacto', 'telefono', 'correo']}
+            data={sucursales}
+            nuevo={nuevaSucursal}
+            setNuevo={setNuevaSucursal}
+            mostrar={mostrarSucursal}
+            setMostrar={setMostrarSucursal}
+            onSave={() => guardarFila(sucursales, setSucursales, nuevaSucursal, setNuevaSucursal, setMostrarSucursal)}
+          />
+        );
+
+      case 3:
+        return (
+          <DataTable
+            title="Agregar Áreas"
+            columns={['area', 'contacto', 'telefono', 'correo']}
+            data={areas}
+            nuevo={nuevaArea}
+            setNuevo={setNuevaArea}
+            mostrar={mostrarArea}
+            setMostrar={setMostrarArea}
+            onSave={() => guardarFila(areas, setAreas, nuevaArea, setNuevaArea, setMostrarArea)}
+          />
+        );
+
+      case 4:
+        return (
+          <section className="space-y-4">
+            {['usuario', 'contraseña', 'confirmar'].map((f) => (
               <input
-                type="checkbox"
-                checked={c.seleccionado || false}
-                onChange={() => {
-                  const actualizados = [...contactos];
-                  actualizados[index].seleccionado = !actualizados[index].seleccionado;
-                  setContactos(actualizados);
-                }}
-                className="w-5 h-5 accent-[#34d399] "
+                key={f}
+                name={f}
+                type={f !== 'usuario' ? 'password' : 'text'}
+                placeholder={f.charAt(0).toUpperCase() + f.slice(1)}
+                className="w-full p-2 rounded border border-gray-300"
+                value={acceso[f]}
+                onChange={handleChange(setAcceso)}
               />
-            </td>
-          </tr>
-        ))}
-
-        {mostrarFilaContacto && (
-          <tr className="border-t bg-[#f0faff] transition-all duration-300 ease-in-out">
-            {['nombre', 'direccion', 'correo', 'telefono', 'cargo'].map((field, i) => (
-              <td key={field} className={`p-2 ${i === 0 ? 'w-[140px]' : i === 1 || i === 2 ? 'w-[180px]' : i === 3 ? 'w-[140px]' : 'w-[180px]'}`}>
-                <input
-                  name={field}
-                  className="w-full px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#a8d9ce] bg-white text-sm font-[Poppins]"
-                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                  value={nuevoContacto[field]}
-                  onChange={(e) =>
-                    setNuevoContacto({ ...nuevoContacto, [field]: e.target.value })
-                  }
-                />
-              </td>
             ))}
-            <td className="p-2 w-[160px] align-top">
-              <div className="flex flex-col items-end gap-2">
-                <div>
+          </section>
+        );
+    }
+  };
 
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    className="bg-green-600 text-white px-3 py-1 rounded font-semibold hover:bg-green-700 transition"
-                    onClick={() => {
-                      const incompleto = Object.values(nuevoContacto).some((v) => v.trim() === '');
-                      if (incompleto) return alert('Completa todos los campos del contacto');
-                      setContactos([...contactos, { ...nuevoContacto, seleccionado: false }]);
-                      setNuevoContacto({ nombre: '', direccion: '', correo: '', telefono: '', cargo: '' });
-                      setMostrarFilaContacto(false);
-                    }}
-                  >
-                    Guardar
-                  </button>
-                  <button
-                    className="bg-red-500 text-white px-3 py-1 rounded font-semibold hover:bg-red-600 transition"
-                    onClick={() => {
-                      setNuevoContacto({ nombre: '', direccion: '', correo: '', telefono: '', cargo: '' });
-                      setMostrarFilaContacto(false);
-                    }}
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </div>
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </table>
-  </section>
-)}
+  return (
+    <div className="max-w-5xl mx-auto my-12 bg-[#fff8f0] p-8 rounded-xl shadow">
+      <h2 className="text-2xl font-bold text-center mb-6">
+        Registrar Empresa - {steps[step]}
+      </h2>
 
+      <TabsCn steps={steps} currentStep={step} onStepChange={setStep} />
 
+      <div className="mt-8">{renderStep()}</div>
 
-{/* Paso 1: Sucursales */}
-{step === 2&& (
-  <section>
-    <h3 className="text-lg font-semibold mb-2">Agregar Sucursales</h3>
-    <table className="w-full table-auto border border-gray-300 rounded-lg overflow-hidden">
-      <thead className="bg-[#f3f4f6] text-left">
-        <tr>
-          <th className="p-2">Sucursal</th>
-          <th className="p-2">Dirección</th>
-          <th className="p-2">Contacto</th>
-          <th className="p-2">Teléfono</th>
-          <th className="p-2 flex items-center justify-between">
-            <span>Correo</span>
-            <button
-              className="bg-blue-600 text-white px-2 py-1 rounded font-bold text-sm"
-              onClick={() => setMostrarFilaSucursal(true)}
-            >
-              ➕
-            </button>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {sucursales.map((s, index) => (
-          <tr key={index} className="border-t">
-            <td className="p-2">{s.sucursal}</td>
-            <td className="p-2">{s.direccion}</td>
-            <td className="p-2">{s.contacto}</td>
-            <td className="p-2">{s.telefono}</td>
-            <td className="p-2">{s.correo}</td>
-          </tr>
-        ))}
-
-        {/* Fila editable para nueva sucursal */}
-        {mostrarFilaSucursal && (
-          <tr className="border-t bg-[#fffaf0]">
-            <td className="p-2">
-              <input
-                name="sucursal"
-                className="w-full p-1 rounded border border-gray-300"
-                placeholder="Sucursal"
-                value={nuevaSucursal.sucursal}
-                onChange={(e) => setNuevaSucursal({ ...nuevaSucursal, sucursal: e.target.value })}
-              />
-            </td>
-            <td className="p-2">
-              <input
-                name="direccion"
-                className="w-full p-1 rounded border border-gray-300"
-                placeholder="Dirección"
-                value={nuevaSucursal.direccion}
-                onChange={(e) => setNuevaSucursal({ ...nuevaSucursal, direccion: e.target.value })}
-              />
-            </td>
-            <td className="p-2">
-              <input
-                name="contacto"
-                className="w-full p-1 rounded border border-gray-300"
-                placeholder="Contacto"
-                value={nuevaSucursal.contacto}
-                onChange={(e) => setNuevaSucursal({ ...nuevaSucursal, contacto: e.target.value })}
-              />
-            </td>
-            <td className="p-2">
-              <input
-                name="telefono"
-                className="w-full p-1 rounded border border-gray-300"
-                placeholder="Teléfono"
-                value={nuevaSucursal.telefono}
-                onChange={(e) => setNuevaSucursal({ ...nuevaSucursal, telefono: e.target.value })}
-              />
-            </td>
-            <td className="p-2 flex gap-2 items-end">
-              <input
-                name="correo"
-                className="flex-1 p-1 rounded border border-gray-300"
-                placeholder="Correo"
-                value={nuevaSucursal.correo}
-                onChange={(e) => setNuevaSucursal({ ...nuevaSucursal, correo: e.target.value })}
-              />
-              <button
-                className="bg-green-600 text-white px-3 py-1 rounded font-semibold"
-                onClick={() => {
-                  const incompleto = Object.values(nuevaSucursal).some((v) => v.trim() === '');
-                  if (incompleto) return alert('Completa todos los campos de la sucursal');
-                  setSucursales([...sucursales, nuevaSucursal]);
-                  setNuevaSucursal({ sucursal: '', direccion: '', contacto: '', telefono: '', correo: '' });
-                  setMostrarFilaSucursal(false);
-                }}
-              >
-                Guardar
-              </button>
-              <button
-                className="bg-red-500 text-white px-3 py-1 rounded font-semibold"
-                onClick={() => {
-                  setNuevaSucursal({ sucursal: '', direccion: '', contacto: '', telefono: '', correo: '' });
-                  setMostrarFilaSucursal(false);
-                }}
-              >
-                Cancelar
-              </button>
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </table>
-  </section>
-)}
-
-    {/* Paso 2: Áreas */}
-{step === 3 && (
-  <section>
-    <h3 className="text-lg font-semibold mb-2">Agregar Áreas</h3>
-    <table className="w-full table-auto border border-gray-300 rounded-lg overflow-hidden">
-      <thead className="bg-[#f3f4f6] text-left">
-        <tr>
-          <th className="p-2">Área</th>
-          <th className="p-2">Contacto</th>
-          <th className="p-2">Teléfono</th>
-          <th className="p-2 flex items-center justify-between">
-            <span>Correo</span>
-            <button
-              className="bg-blue-600 text-white px-2 py-1 rounded font-bold text-sm"
-              onClick={() => setMostrarFilaArea(true)}
-            >
-              ➕
-            </button>
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {areas.map((a, index) => (
-          <tr key={index} className="border-t">
-            <td className="p-2">{a.area}</td>
-            <td className="p-2">{a.contacto}</td>
-            <td className="p-2">{a.telefono}</td>
-            <td className="p-2">{a.correo}</td>
-          </tr>
-        ))}
-
-        {/* FILA QUE MUESTRA EL PROCESO DE EDITAR DE CADA FILA*/}
-        {mostrarFilaArea && (
-          <tr className="border-t bg-[#fff0f5]">
-            <td className="p-2">
-              <input
-                name="area"
-                className="w-full p-1 rounded border border-gray-300"
-                placeholder="Área"
-                value={nuevaArea.area}
-                onChange={(e) => setNuevaArea({ ...nuevaArea, area: e.target.value })}
-              />
-            </td>
-            <td className="p-2">
-              <input
-                name="contacto"
-                className="w-full p-1 rounded border border-gray-300"
-                placeholder="Contacto"
-                value={nuevaArea.contacto}
-                onChange={(e) => setNuevaArea({ ...nuevaArea, contacto: e.target.value })}
-              />
-            </td>
-            <td className="p-2">
-              <input
-                name="telefono"
-                className="w-full p-1 rounded border border-gray-300"
-                placeholder="Teléfono"
-                value={nuevaArea.telefono}
-                onChange={(e) => setNuevaArea({ ...nuevaArea, telefono: e.target.value })}
-              />
-            </td>
-            <td className="p-2 flex gap-2 items-end">
-              <input
-                name="correo"
-                className="flex-1 p-1 rounded border border-gray-300"
-                placeholder="Correo"
-                value={nuevaArea.correo}
-                onChange={(e) => setNuevaArea({ ...nuevaArea, correo: e.target.value })}
-              />
-              <button
-                className="bg-green-600 text-white px-3 py-1 rounded font-semibold"
-                onClick={() => {
-                  const incompleto = Object.values(nuevaArea).some((v) => v.trim() === '');
-                  if (incompleto) return alert('Completa todos los campos del área');
-                  setAreas([...areas, nuevaArea]);
-                  setNuevaArea({ area: '', contacto: '', telefono: '', correo: '' });
-                  setMostrarFilaArea(false);
-                }}
-              >
-                Guardar
-              </button>
-              <button
-                className="bg-red-500 text-white px-3 py-1 rounded font-semibold"
-                onClick={() => {
-                  setNuevaArea({ area: '', contacto: '', telefono: '', correo: '' });
-                  setMostrarFilaArea(false);
-                }}
-              >
-                Cancelar
-              </button>
-            </td>
-          </tr>
-        )}
-      </tbody>
-    </table>
-  </section>
-)}
-
-{/* Paso 4: DATOS DE ACCESO */}
-{step === 4 && (
-  <section className="space-y-4">
-    <input
-      name="usuario"
-      className="w-full p-2 rounded border border-gray-300"
-      placeholder="Usuario"
-      value={acceso.usuario}
-      onChange={(e) => setAcceso({ ...acceso, usuario: e.target.value })}
-    />
-    <input
-      name="contraseña"
-      type="password"
-      className="w-full p-2 rounded border border-gray-300"
-      placeholder="Contraseña"
-      value={acceso.contraseña}
-      onChange={(e) => setAcceso({ ...acceso, contraseña: e.target.value })}
-    />
-    <input
-      name="confirmar"
-      type="password"
-      className="w-full p-2 rounded border border-gray-300"
-      placeholder="Confirmar Contraseña"
-      value={acceso.confirmar}
-      onChange={(e) => setAcceso({ ...acceso, confirmar: e.target.value })}
-    />
-  </section>
-)}
-
-      </div>
-      {/* EN ESTA APARTE SE VE LA NAVEGACION*/}
+      {/* Navegación */}
       <div className="mt-8 flex justify-between">
-        
-      <button
-  type="button"
-  onClick={() => window.location.href = "/cliente_ad?tipo=empresa"}
-  className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-bold hover:bg-gray-400"
->
-  Volver
-</button>
-
+        <button
+          type="button"
+          onClick={() => (window.location.href = '/cliente_ad?tipo=empresa')}
+          className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg font-bold hover:bg-gray-400"
+        >
+          Volver
+        </button>
 
         {step < steps.length - 1 ? (
           <button
-            onClick={onNext}
+            onClick={() => setStep((s) => s + 1)}
             className="px-6 py-2 bg-orange-500 text-white rounded-lg font-bold"
           >
             Siguiente
@@ -464,7 +176,7 @@ const [mostrarFilaContacto, setMostrarFilaContacto] = useState(false);
           <DialogCn
             triggerLabel="Enviar"
             title="Confirmar Envío"
-            description="¿Estás segura de que deseas registrar esta empresa con los datos ingresados?"
+            description="¿Estás seguro de que deseas registrar esta empresa con los datos ingresados?"
           >
             <div className="flex justify-end space-x-4 mt-4">
               <button
@@ -473,11 +185,7 @@ const [mostrarFilaContacto, setMostrarFilaContacto] = useState(false);
               >
                 Confirmar
               </button>
-              <button
-                type="button"
-                className="px-6 py-2 bg-red-600 text-white rounded-lg font-bold"
-                onClick={() => console.log('Registro cancelado')}
-              >
+              <button className="px-6 py-2 bg-red-600 text-white rounded-lg font-bold">
                 Cancelar
               </button>
             </div>
@@ -485,5 +193,118 @@ const [mostrarFilaContacto, setMostrarFilaContacto] = useState(false);
         )}
       </div>
     </div>
+  );
+}
+
+// 🔹 Componente unificado para todas las tablas
+function DataTable({ 
+  title, 
+  columns, 
+  data, 
+  setData, 
+  nuevo, 
+  setNuevo, 
+  mostrar, 
+  setMostrar, 
+  onSave,
+  conCheckbox = false 
+}) {
+  const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+
+  const handleCancelar = () => {
+    setNuevo(Object.fromEntries(
+      Object.keys(nuevo).map((k) => [k, k === 'seleccionado' ? false : ''])
+    ));
+    setMostrar(false);
+  };
+
+  return (
+    <section>
+      <h3 className="text-lg font-semibold mb-2">{title}</h3>
+      <table className="w-full border border-gray-300 rounded-lg overflow-hidden text-sm">
+        <thead className="bg-gray-100 text-[#374151]">
+          <tr>
+            {columns.map((col) => (
+              <th key={col} className="p-2 text-center border-b font-semibold">
+                {capitalize(col)}
+              </th>
+            ))}
+            <th className="p-2 text-center border-b font-semibold w-16">
+              <button
+                className="bg-orange-400 text-white w-7 h-7 rounded hover:bg-orange-500 transition"
+                onClick={() => setMostrar(true)}
+                disabled={mostrar}
+              >
+                +
+              </button>
+            </th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {data.length === 0 && !mostrar && (
+            <tr>
+              <td colSpan={columns.length + 1} className="p-4 text-center text-gray-500 italic">
+                No hay registros
+              </td>
+            </tr>
+          )}
+
+          {data.map((item, idx) => (
+            <tr key={idx} className="border-t hover:bg-gray-50 transition">
+              {columns.map((col) => (
+                <td key={col} className="p-2 text-center">{item[col]}</td>
+              ))}
+              <td className="p-2 text-center">
+                {conCheckbox ? (
+                  <input
+                    type="checkbox"
+                    checked={item.seleccionado || false}
+                    onChange={() => {
+                      const copia = [...data];
+                      copia[idx].seleccionado = !copia[idx].seleccionado;
+                      setData(copia);
+                    }}
+                    className="w-5 h-5 accent-orange-400 cursor-pointer"
+                  />
+                ) : null}
+              </td>
+            </tr>
+          ))}
+
+          {mostrar && (
+            <tr className="border-t bg-[#f0faff] transition">
+              {columns.map((f) => (
+                <td key={f} className="p-2">
+                  <input
+                    name={f}
+                    value={nuevo[f]}
+                    onChange={(e) => setNuevo({ ...nuevo, [f]: e.target.value })}
+                    placeholder={capitalize(f)}
+                    className="w-full px-2 py-1 border rounded text-sm"
+                  />
+                </td>
+              ))}
+              <td className="p-2 text-center">
+                <div className="flex justify-center gap-2">
+                  <button
+                    className="bg-green-500 text-white px-2 py-1 rounded-md hover:bg-green-600"
+                    onClick={onSave}
+                  >
+                    ✔
+                  </button>
+                  <button
+                    className="bg-red-400 text-white px-2 py-1 rounded-md hover:bg-red-500"
+                    onClick={handleCancelar}
+                  >
+                    ✖
+                  </button>
+                </div>
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </section>
   );
 }

@@ -162,7 +162,7 @@ export default function Page() {
       </div>
 
       {/* Tabla reutilizable */}
-      <div className="px-6 max-w-[1200px] mx-auto">
+      <div className="px-6 max-w-[1600px] mx-auto">
         <TicketsTable data={data} columns={columns} />
       </div>
     </div>
