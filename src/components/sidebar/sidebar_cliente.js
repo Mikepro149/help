@@ -3,6 +3,7 @@
 "use client";
 import React from "react";
 import { FaHome, FaTicketAlt, FaUsers, FaBoxOpen, FaClipboardList, FaUserCircle, FaSignOutAlt } from "react-icons/fa";
+import { useIsClient } from "@/hooks/use-isomorphic-layout-effect";
 
 
 const sections = [
@@ -14,7 +15,11 @@ const sections = [
 ];
 
 const Sidebar = ({ onProfile, onLogout }) => {
+	const isClient = useIsClient();
+	
 	const handleLogout = () => {
+		if (!isClient) return;
+		
 		try {
 			// Limpiar posibles datos de sesión
 			localStorage.removeItem('boletos_cliente_data');
@@ -22,9 +27,7 @@ const Sidebar = ({ onProfile, onLogout }) => {
 			sessionStorage.clear();
 		} catch (_) {}
 		// Redirigir a login
-		if (typeof window !== 'undefined') {
-			window.location.href = '/login';
-		}
+		window.location.href = '/login';
 	};
 	return (
 		<aside

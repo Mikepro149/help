@@ -4,6 +4,7 @@ import * as React from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Mail, X, Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight, AlignJustify, List, ListOrdered, Indent, Outdent, Link, Image, Upload } from "lucide-react";
+import { useIsClient } from "@/hooks/use-isomorphic-layout-effect";
 
 // Datos iniciales
 const initialData = [
@@ -58,7 +59,11 @@ const columns = [
     id: "chat",
     header: "Chat",
     cell: ({ row }) => (
-      <Button size="sm" variant="ghost" onClick={() => alert(`Abrir chat de ${row.id}`)}>
+      <Button
+        size="sm"
+        variant="ghost"
+        onClick={() => window.location.href = `/cliente/boletos_cliente/chat/${row.id}`}
+      >
         <Mail className="w-5 h-5 text-blue-500" />
       </Button>
     ),
@@ -75,14 +80,26 @@ const columns = [
       />
     ),
   },
+  {
+    accessorKey: "img",
+    header: "Imagen",
+    cell: ({ row }) => (
+      <span className={`px-2 py-1 rounded text-xs font-medium ${
+        row.img ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500'
+      }`}>
+        {row.img ? 'Sí' : 'No'}
+      </span>
+    ),
+  },
 ];
 
 function DataTableTickets() {
+  const isClient = useIsClient();
 
   // Función para cargar datos del localStorage
   const loadDataFromStorage = () => {
     try {
-      if (typeof window === 'undefined') return initialData;
+      if (!isClient) return initialData;
       const savedData = window.localStorage.getItem('boletos_cliente_data');
       return savedData ? JSON.parse(savedData) : initialData;
     } catch (error) {
@@ -94,7 +111,7 @@ function DataTableTickets() {
   // Función para guardar datos en localStorage y notificar
   const saveDataToStorage = (newData) => {
     try {
-      if (typeof window === 'undefined') return;
+      if (!isClient) return;
       window.localStorage.setItem('boletos_cliente_data', JSON.stringify(newData));
       // Notificar a otros componentes que los tickets cambiaron
       window.dispatchEvent(new CustomEvent('tickets:update', { detail: { tickets: newData } }));
@@ -143,8 +160,10 @@ function DataTableTickets() {
     tipo: "",
     equipo: "",
     descripcion: "",
-    prioridad: "Media"
+    prioridad: "Media",
+    imagen: null
   });
+  const [imagePreview, setImagePreview] = React.useState(null);
 
   // Función para generar ID único
   const generateTicketId = () => {
@@ -156,11 +175,77 @@ function DataTableTickets() {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => {
     setIsModalOpen(false);
-    setTicketData({ tipo: "", equipo: "", descripcion: "", prioridad: "Media" });
+    setTicketData({ tipo: "", equipo: "", descripcion: "", prioridad: "Media", imagen: null });
+    setImagePreview(null);
   };
 
   const handleInputChange = (field, value) => {
     setTicketData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Función para manejar la subida de imagen
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Validar tipo de archivo
+      if (!file.type.startsWith('image/')) {
+        alert('Por favor, selecciona solo archivos de imagen.');
+        return;
+      }
+      
+      // Validar tamaño (máximo 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        alert('La imagen es demasiado grande. Máximo 5MB.');
+        return;
+      }
+
+      // Crear preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target.result);
+      };
+      reader.readAsDataURL(file);
+      
+      // Guardar archivo en el estado
+      setTicketData(prev => ({ ...prev, imagen: file }));
+    }
+  };
+
+  // Función para eliminar imagen
+  const handleRemoveImage = () => {
+    setTicketData(prev => ({ ...prev, imagen: null }));
+    setImagePreview(null);
+  };
+
+  // Función para manejar drag & drop
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragEnter = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      // Crear un evento sintético para usar la función existente
+      const syntheticEvent = {
+        target: { files: [file] }
+      };
+      handleImageUpload(syntheticEvent);
+    }
   };
 
   const handleSubmitTicket = () => {
@@ -182,12 +267,13 @@ function DataTableTickets() {
       fecha: new Date().toISOString().split('T')[0], // Fecha actual
       prioridad: ticketData.prioridad, // Usar la prioridad del formulario
       soporte: false, // Por defecto no requiere soporte in situ
+      img: ticketData.imagen ? ticketData.imagen.name : null, // Guardar nombre de la imagen
     };
 
     // Agregar el nuevo ticket a la lista
     const updatedData = [...data, newTicket];
     updateData(updatedData);
-    if (typeof window !== 'undefined') {
+    if (isClient) {
       window.dispatchEvent(new CustomEvent('tickets:created', { detail: { ticket: newTicket, tickets: updatedData } }));
     }
     
@@ -464,20 +550,67 @@ function DataTableTickets() {
                   <label className="block text-sm font-semibold text-gray-800 mb-3">
                     Imagen:
                   </label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-gray-50 hover:bg-gray-100 transition-colors">
-                    <div className="text-gray-400 mb-4">
-                      <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
+                  
+                  {imagePreview ? (
+                    <div className="border-2 border-gray-300 rounded-xl p-4 bg-gray-50">
+                      <div className="relative">
+                        <img 
+                          src={imagePreview} 
+                          alt="Preview" 
+                          className="w-full h-32 object-cover rounded-lg mb-3"
+                        />
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-gray-600">
+                            {ticketData.imagen?.name}
+                          </span>
+                          <Button 
+                            onClick={handleRemoveImage}
+                            variant="outline"
+                            size="sm"
+                            className="text-red-500 border-red-300 hover:bg-red-50"
+                          >
+                            Eliminar
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      className="mt-2 border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white transition-colors"
+                  ) : (
+                    <div 
+                      className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center bg-gray-50 hover:bg-gray-100 transition-colors cursor-pointer"
+                      onDragOver={handleDragOver}
+                      onDragEnter={handleDragEnter}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      onClick={() => document.getElementById('image-upload').click()}
                     >
-                      Ingresar imagen
-                    </Button>
-                  </div>
+                      <div className="text-gray-400 mb-4">
+                        <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                        id="image-upload"
+                      />
+                      <Button 
+                        type="button"
+                        variant="outline" 
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          document.getElementById('image-upload').click();
+                        }}
+                        className="mt-2 border-2 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white transition-colors cursor-pointer"
+                      >
+                        Ingresar imagen
+                      </Button>
+                      <p className="text-xs text-gray-500 mt-2">PNG, JPG, GIF hasta 5MB</p>
+                      <p className="text-xs text-blue-500 mt-1">o arrastra y suelta aquí</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
