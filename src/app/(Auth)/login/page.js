@@ -18,24 +18,35 @@ export default function Login() {
 
   useEffect(() => {
     async function checkAuth() {
+      const token = sessionStorage.getItem("access_token");
+      if (!token) {
+        setChecking(false);
+        return;
+      }
+
       try {
-        const response = await axiosInstance.get("/user");
+        const response = await axiosInstance.get("/users/me", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (response.status === 200) {
-          const userData = response.data;
+          const userData = response.data.user;
+
           const redirectUrl =
-            userData.role === "admin"
+            userData.role === "ADMIN"
               ? "/inicio_ad"
-              : userData.role === "support"
+              : userData.role === "SUPPORT_TI"
               ? "/inicio_ti"
-              : userData.role === "on_site_support"
+              : userData.role === "SUPPORT_SITU"
               ? "/inicio_situ"
               : "/inicio";
-          
+
           window.location.replace(redirectUrl);
         }
       } catch (error) {
-        // No hay sesión o hay un error, continuar con el login
+        // No hay sesión o error, continuar con el login
       } finally {
         setChecking(false);
       }
@@ -52,24 +63,25 @@ export default function Login() {
     setError(null);
 
     try {
-      const response = await axiosInstance.post("/login", {
+      const response = await axiosInstance.post("/auth/login", {
         email,
         password,
       });
 
-      console.log("✅ Login exitoso!", response.data);
-      
-      const { role } = response.data.user;
+      const { accessToken, user } = response.data;
+
+      // Guárdalo solo temporalmente
+      sessionStorage.setItem("access_token", accessToken);
 
       let redirectUrl;
-      switch (role) {
-        case "admin":
+      switch (user.role) {
+        case "ADMIN":
           redirectUrl = "/inicio_ad";
           break;
-        case "support":
+        case "SUPPORT_TI":
           redirectUrl = "/inicio_ti";
           break;
-        case "on_site_support":
+        case "SUPPORT_SITU":
           redirectUrl = "/inicio_situ";
           break;
         default:
@@ -79,9 +91,7 @@ export default function Login() {
       window.location.replace(redirectUrl);
     } catch (err) {
       console.error("💥 Error de conexión:", err);
-      setError(
-        err.response?.data?.message || "Error al iniciar sesión"
-      );
+      setError(err.response?.data?.message || "Error al iniciar sesión");
     } finally {
       setIsLoading(false);
     }

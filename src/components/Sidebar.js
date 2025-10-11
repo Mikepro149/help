@@ -21,31 +21,95 @@ import {
 // ],
 const menuConfig = {
   admin: [
-    { name: "Home", href: "/inicio_ad", icon: <FaHome style={{ marginRight: 12 }} /> },
-    { name: "Tickets", href: "/boletos_ad", icon: <FaTicketAlt style={{ marginRight: 12 }} /> },
-    { name: "Clientes", href: "/cliente_ad", icon: <FaUsers style={{ marginRight: 12 }} /> },
-    { name: "Empresa", href: "/empresa_ad", icon: <FaBoxOpen style={{ marginRight: 12 }} /> },
-    { name: "Plan de Soporte", href: "/planSoporte_ad", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
+    {
+      name: "Home",
+      href: "/inicio_ad",
+      icon: <FaHome style={{ marginRight: 12 }} />,
+    },
+    {
+      name: "Tickets",
+      href: "/boletos_ad",
+      icon: <FaTicketAlt style={{ marginRight: 12 }} />,
+    },
+    {
+      name: "Clientes",
+      href: "/cliente_ad",
+      icon: <FaUsers style={{ marginRight: 12 }} />,
+    },
+    {
+      name: "Empresa",
+      href: "/empresa_ad",
+      icon: <FaBoxOpen style={{ marginRight: 12 }} />,
+    },
+    {
+      name: "Plan de Soporte",
+      href: "/planSoporte_ad",
+      icon: <FaClipboardList style={{ marginRight: 12 }} />,
+    },
   ],
   support: [
-    { name: "Home", href: "/inicio_ti", icon: <FaHome style={{ marginRight: 12 }} /> },
-    { name: "Tickets", href: "/boletos_ti", icon: <FaTicketAlt style={{ marginRight: 12 }} /> },
-    { name: "Clientes", href: "/cliente_ti", icon: <FaUsers style={{ marginRight: 12 }} /> },
-    { name: "Productos", href: "/productos_ti", icon: <FaBoxOpen style={{ marginRight: 12 }} /> },
-    { name: "Soporte tecnico", href: "/soporte-tecnico", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
-    { name: "Empresa", href: "/emp_ti_emp", icon: <FaClipboardList style={{ marginRight: 12 }} /> },
+    {
+      name: "Home",
+      href: "/inicio_ti",
+      icon: <FaHome style={{ marginRight: 12 }} />,
+    },
+    {
+      name: "Tickets",
+      href: "/boletos_ti",
+      icon: <FaTicketAlt style={{ marginRight: 12 }} />,
+    },
+    {
+      name: "Clientes",
+      href: "/cliente_ti",
+      icon: <FaUsers style={{ marginRight: 12 }} />,
+    },
+    {
+      name: "Productos",
+      href: "/productos_ti",
+      icon: <FaBoxOpen style={{ marginRight: 12 }} />,
+    },
+    {
+      name: "Soporte tecnico",
+      href: "/soporte-tecnico",
+      icon: <FaClipboardList style={{ marginRight: 12 }} />,
+    },
+    {
+      name: "Empresa",
+      href: "/emp_ti_emp",
+      icon: <FaClipboardList style={{ marginRight: 12 }} />,
+    },
   ],
   on_site_support: [
-    { name: "Home", href: "/inicio_situ", icon: <FaHome style={{ marginRight: 12 }} /> },
-    { name: "Tickets", href: "/empresa_situ", icon: <FaTicketAlt style={{ marginRight: 12 }} /> },
-    { name: "Clientes", href: "/boletos_situ", icon: <FaUsers style={{ marginRight: 12 }} /> },
+    {
+      name: "Home",
+      href: "/inicio_situ",
+      icon: <FaHome style={{ marginRight: 12 }} />,
+    },
+    {
+      name: "Tickets",
+      href: "/empresa_situ",
+      icon: <FaTicketAlt style={{ marginRight: 12 }} />,
+    },
+    {
+      name: "Clientes",
+      href: "/boletos_situ",
+      icon: <FaUsers style={{ marginRight: 12 }} />,
+    },
   ],
   manager: [
-    { name: "Home", href: "/inicio_manager", icon: <FaHome style={{ marginRight: 12 }} /> },
+    {
+      name: "Home",
+      href: "/inicio_manager",
+      icon: <FaHome style={{ marginRight: 12 }} />,
+    },
     // Agregar menús específicos para manager
   ],
   manager_worker: [
-    { name: "Home", href: "/inicio_worker", icon: <FaHome style={{ marginRight: 12 }} /> },
+    {
+      name: "Home",
+      href: "/inicio_worker",
+      icon: <FaHome style={{ marginRight: 12 }} />,
+    },
     // Agregar menús específicos para manager_worker
   ],
 };
@@ -58,13 +122,20 @@ const Sidebar = ({ onProfile }) => {
   useEffect(() => {
     const getCurrentUser = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/user", {
+        const token = sessionStorage.getItem("access_token");
+        const response = await fetch("http://localhost:3001/users/profile", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
           credentials: "include",
         });
-        
+
         if (response.ok) {
           const userData = await response.json();
-          setUser(userData);
+          setUser({
+            name: "Usuario, porque aun no hay nombre en la bd",
+            role: userData.user.role.toLowerCase(),
+          });
         }
       } catch (error) {
         console.error("Error obteniendo usuario:", error);
@@ -89,7 +160,16 @@ const Sidebar = ({ onProfile }) => {
   // Loading state
   if (!user) {
     return (
-      <aside style={{ width: 300, minHeight: "100vh", background: "white", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <aside
+        style={{
+          width: 300,
+          minHeight: "100vh",
+          background: "white",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <div>Cargando...</div>
       </aside>
     );
@@ -100,11 +180,11 @@ const Sidebar = ({ onProfile }) => {
 
   // Mapeo de roles para mostrar nombres amigables
   const roleNames = {
-    admin: "Administrador",
-    support: "Soporte TI", 
-    on_site_support: "Soporte In-Situ",
-    manager: "Manager",
-    manager_worker: "Trabajador"
+    ADMIN: "Administrador",
+    SUPPORT: "Soporte TI",
+    SUPPORT_SITU: "Soporte In-Situ",
+    MANAGER: "Manager",
+    MANAGER_WORKER: "Trabajador",
   };
 
   return (
@@ -132,38 +212,44 @@ const Sidebar = ({ onProfile }) => {
           justifyContent: "center",
           overflow: "hidden",
           padding: "20px",
-          textAlign: "center"
+          textAlign: "center",
         }}
       >
-        <div style={{ 
-          background: "rgba(255,255,255,0.2)", 
-          borderRadius: "50%", 
-          width: 80, 
-          height: 80, 
-          display: "flex", 
-          alignItems: "center", 
-          justifyContent: "center",
-          marginBottom: 15
-        }}>
+        <div
+          style={{
+            background: "rgba(255,255,255,0.2)",
+            borderRadius: "50%",
+            width: 80,
+            height: 80,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 15,
+          }}
+        >
           <FaUserCircle style={{ fontSize: 50, color: "white" }} />
         </div>
-        
-        <h3 style={{ 
-          color: "white", 
-          fontWeight: "bold", 
-          fontSize: 18,
-          margin: "0 0 5px 0"
-        }}>
+
+        <h3
+          style={{
+            color: "white",
+            fontWeight: "bold",
+            fontSize: 18,
+            margin: "0 0 5px 0",
+          }}
+        >
           {user.name}
         </h3>
-        
-        <span style={{ 
-          color: "rgba(255,255,255,0.8)", 
-          fontSize: 14,
-          background: "rgba(255,255,255,0.1)",
-          padding: "4px 12px",
-          borderRadius: 12
-        }}>
+
+        <span
+          style={{
+            color: "rgba(255,255,255,0.8)",
+            fontSize: 14,
+            background: "rgba(255,255,255,0.1)",
+            padding: "4px 12px",
+            borderRadius: 12,
+          }}
+        >
           {roleNames[user.role] || user.role}
         </span>
       </div>

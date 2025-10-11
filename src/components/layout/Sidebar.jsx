@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useUser } from "@/context/UserContext"
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/context/UserContext";
 import {
   Home,
   Ticket,
@@ -11,42 +11,62 @@ import {
   ClipboardList,
   User,
   LogOut,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Separator } from "@/components/ui/separator"
-import { cn } from "@/lib/utils"
-
-const sections = [
-  { name: "Home", href: "/dashboard/home", icon: Home },
-  { name: "Tickets", href: "/dashboard/tickets", icon: Ticket },
-  { name: "Clientes", href: "/dashboard/clients", icon: Users },
-  { name: "Empresa", href: "/dashboard/company", icon: Building },
-  { name: "Plan de Soporte", href: "/dashboard/support-plan", icon: ClipboardList },
-]
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 export default function Sidebar({ onProfile }) {
-  const router = useRouter()
-  const { user, loading } = useUser()
+  const router = useRouter();
+  const { user, loading } = useUser();
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:8000/api/logout", {
+      await fetch("http://localhost:3001/auth/logout", {
         method: "POST",
         credentials: "include",
-      })
-      router.push("/login")
+      });
+      sessionStorage.removeItem("access_token");
+      router.push("/login");
     } catch (error) {
-      console.error("Error cerrando sesión:", error)
+      console.error("Error cerrando sesión:", error);
     }
-  }
+  };
 
   if (loading) {
     return (
       <aside className="w-72 min-h-screen flex items-center justify-center bg-white border-r">
         <p className="text-gray-500">Cargando...</p>
       </aside>
-    )
+    );
   }
+
+  // 🔹 Configura los menús según el rol del usuario
+  const menuByRole = {
+    ADMIN: [
+      { name: "Home", href: "/inicio_ad", icon: Home },
+      { name: "Tickets", href: "/boletos_ad", icon: Ticket },
+      { name: "Clientes", href: "/cliente_ad", icon: Users },
+      { name: "Empresa", href: "/empresa_ad", icon: Building },
+      { name: "Plan de Soporte", href: "/planSoporte_ad", icon: ClipboardList },
+    ],
+    SUPPORT_TI: [
+      { name: "Home", href: "/inicio_ti", icon: Home },
+      { name: "Tickets", href: "/boletos_ti", icon: Ticket },
+      { name: "Clientes", href: "/cliente_ti", icon: Users },
+    ],
+    SUPPORT_SITU: [
+      { name: "Home", href: "/inicio_situ", icon: Home },
+      { name: "Tickets", href: "/boletos_situ", icon: Ticket },
+    ],
+  };
+
+  const sections = menuByRole[user?.role] || [];
+
+  // Capitaliza el rol para mostrarlo bonito
+  const displayRole = user?.role
+    ? user.role.replace("_", " ").toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
+    : "Sin rol";
 
   return (
     <aside className="w-72 min-h-screen flex flex-col bg-white border-r">
@@ -55,13 +75,11 @@ export default function Sidebar({ onProfile }) {
         <div className="w-16 h-16 flex items-center justify-center rounded-full bg-white/20 mb-2">
           <User className="h-8 w-8" />
         </div>
-        <h2 className="font-semibold">{user?.name || "Invitado"}</h2>
-        <span className="text-sm opacity-80">
-          {user?.role || "Sin rol"}
-        </span>
+        <h2 className="font-semibold">{user?.email || "Invitado"}</h2>
+        <span className="text-sm opacity-80">{displayRole}</span>
       </div>
 
-      {/* Secciones */}
+      {/* Secciones dinámicas */}
       <nav className="flex-1 px-4 py-6 space-y-1">
         {sections.map(({ name, href, icon: Icon }) => (
           <Link
@@ -99,5 +117,5 @@ export default function Sidebar({ onProfile }) {
         </Button>
       </div>
     </aside>
-  )
+  );
 }
