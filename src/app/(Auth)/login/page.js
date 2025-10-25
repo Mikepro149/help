@@ -76,13 +76,13 @@ export default function Login() {
       let redirectUrl;
       switch (user.role) {
         case "ADMIN":
-          redirectUrl = "/inicio_ad";
+          redirectUrl = "/dashboard/home";
           break;
         case "SUPPORT_TI":
-          redirectUrl = "/inicio_ti";
+          redirectUrl = "/dashboard/home";
           break;
         case "SUPPORT_SITU":
-          redirectUrl = "/inicio_situ";
+          redirectUrl = "/dashboard/home";
           break;
         default:
           redirectUrl = "/inicio";

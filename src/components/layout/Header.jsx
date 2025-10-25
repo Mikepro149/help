@@ -1,14 +1,33 @@
-export default function Header() {
+// components/layout/Header.jsx
+"use client";
+
+import { Home } from "lucide-react";
+import { useUser } from "@/context/UserContext";
+import styles from './Header.module.css';
+
+export default function Header({ title, icon: Icon = Home }) {
+  const { user } = useUser();
+
   return (
-    <header className="flex items-center justify-between p-4 bg-white shadow">
-      <div className="flex items-center gap-2">
-        <span>🏠</span>
-        <h1 className="font-bold text-xl">Inicio</h1> 
+    <header className={styles.header}>
+      <div className={styles.headerLeft}>
+        <Icon className={styles.headerIcon} />
+        <h1 className={styles.headerTitle}>{title}</h1>
       </div>
-      <div className="text-sm text-gray-600">
-        <p>J&P PERIFERICOS S.A.C.</p>
-        <p>Los Olivos</p>
+
+      <div className={styles.headerRight}>
+        <span className={styles.companyName}>J&P PERIFERICOS S.A.C.</span>
+
+        {user && (
+          <div className={styles.userInfo}>
+            <p className={styles.welcomeText}>Bienvenido:</p>
+            <p className={styles.userName}>{user.name}</p>
+            <p className={styles.userRole}>
+              {user.role.replace("_", " ").toLowerCase()}
+            </p>
+          </div>
+        )}
       </div>
     </header>
-  )
+  );
 }

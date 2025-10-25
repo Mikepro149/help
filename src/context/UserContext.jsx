@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useState, useEffect } from "react";
-import jwtDecode from "jwt-decode"; // el nombre puede ser cualquiera
+import { useRouter } from "next/navigation";
+import jwtDecode from "jwt-decode";
 
 const UserContext = createContext(null);
 export const useUser = () => useContext(UserContext);
@@ -8,6 +9,7 @@ export const useUser = () => useContext(UserContext);
 export function UserProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   // Helper para refrescar token
   const refreshToken = async () => {
@@ -17,13 +19,18 @@ export function UserProvider({ children }) {
         credentials: "include",
       });
 
-      if (!res.ok) return null;
+      if (!res.ok) {
+        // Si falla el refresh, cerrar sesión
+        handleLogout();
+        return null;
+      }
 
       const data = await res.json();
       sessionStorage.setItem("access_token", data.accessToken);
       return data.accessToken;
     } catch (err) {
       console.error("Error refrescando token:", err);
+      handleLogout();
       return null;
     }
   };
@@ -38,7 +45,6 @@ export function UserProvider({ children }) {
         const decoded = jwtDecode(token);
         const now = Date.now() / 1000;
         if (decoded.exp - now < 60) {
-          // Menos de 60s para expirar → refrescar
           token = await refreshToken();
         }
       } catch (err) {
@@ -65,22 +71,40 @@ export function UserProvider({ children }) {
         const data = await res.json();
         setUser(data);
       } else if (res.status === 401) {
-        console.warn("Usuario no autorizado, limpiar sesión");
-        setUser(null);
-        sessionStorage.removeItem("access_token");
+        console.warn("Usuario no autorizado");
+        handleLogout();
       }
     } catch (err) {
       console.error("Error obteniendo usuario:", err);
-      setUser(null);
+      handleLogout();
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Logout centralizado
+  const handleLogout = async () => {
+    try {
+      // Llama al backend para borrar la cookie
+      await fetch("http://localhost:3001/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Error en logout:", error);
+    } finally {
+      // Limpia estado local
+      setUser(null);
+      sessionStorage.removeItem("access_token");
+      router.push("/login");
+      router.refresh(); // Fuerza refresh del middleware
     }
   };
 
   useEffect(() => {
     fetchUser();
 
-    // Intervalo para refrescar token cada 5 min (opcional)
+    // Intervalo para refrescar token cada 5 min
     const interval = setInterval(async () => {
       const token = sessionStorage.getItem("access_token");
       if (token) await refreshToken();
@@ -91,7 +115,7 @@ export function UserProvider({ children }) {
 
   return (
     <UserContext.Provider
-      value={{ user, setUser, loading, fetchUser, fetchWithAuth }}
+      value={{ user, setUser, loading, fetchUser, fetchWithAuth, handleLogout }}
     >
       {children}
     </UserContext.Provider>

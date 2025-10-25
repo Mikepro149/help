@@ -1,0 +1,11 @@
+.sidebar {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.sidebarNav {
+    flex: 1;
+    overflow: auto;
+}

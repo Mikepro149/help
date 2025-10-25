@@ -15,23 +15,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import styles from './Sidebar.module.css';
 
 export default function Sidebar({ onProfile }) {
   const router = useRouter();
-  const { user, loading } = useUser();
-
-  const handleLogout = async () => {
-    try {
-      await fetch("http://localhost:3001/auth/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      sessionStorage.removeItem("access_token");
-      router.push("/login");
-    } catch (error) {
-      console.error("Error cerrando sesión:", error);
-    }
-  };
+  const { user, loading, handleLogout } = useUser();
 
   if (loading) {
     return (
@@ -44,20 +32,33 @@ export default function Sidebar({ onProfile }) {
   // 🔹 Configura los menús según el rol del usuario
   const menuByRole = {
     ADMIN: [
-      { name: "Home", href: "/inicio_ad", icon: Home },
-      { name: "Tickets", href: "/boletos_ad", icon: Ticket },
-      { name: "Clientes", href: "/cliente_ad", icon: Users },
-      { name: "Empresa", href: "/empresa_ad", icon: Building },
-      { name: "Plan de Soporte", href: "/planSoporte_ad", icon: ClipboardList },
+      { name: "Home", href: "/dashboard/home", icon: Home },
+      { name: "Tickets", href: "/dashboard/tickets", icon: Ticket },
+      { name: "Clientes", href: "/dashboard/clients", icon: Users },
+      { name: "Empresa", href: "/dashboard/company", icon: Building },
+      {
+        name: "Plan de Soporte",
+        href: "/dashboard/support-plans",
+        icon: ClipboardList,
+      },
     ],
     SUPPORT_TI: [
-      { name: "Home", href: "/inicio_ti", icon: Home },
-      { name: "Tickets", href: "/boletos_ti", icon: Ticket },
-      { name: "Clientes", href: "/cliente_ti", icon: Users },
+      { name: "Home", href: "/dashboard/home", icon: Home },
+      { name: "Tickets", href: "/dashboard/tickets", icon: Ticket },
+      { name: "Clientes", href: "/dashboard/clients", icon: Users },
     ],
     SUPPORT_SITU: [
-      { name: "Home", href: "/inicio_situ", icon: Home },
-      { name: "Tickets", href: "/boletos_situ", icon: Ticket },
+      { name: "Home", href: "/dashboard/home", icon: Home },
+      { name: "Tickets", href: "/dashboard/tickets", icon: Ticket },
+    ],
+    MANAGER: [
+      { name: "Home", href: "/dashboard/home", icon: Home },
+      { name: "Reportes", href: "/dashboard/reports", icon: ClipboardList },
+      { name: "Analíticas", href: "/dashboard/analytics", icon: Building },
+    ],
+    MANAGER_WORKER: [
+      { name: "Home", href: "/dashboard/home", icon: Home },
+      { name: "Tareas", href: "/dashboard/tasks", icon: Ticket },
     ],
   };
 
@@ -65,22 +66,25 @@ export default function Sidebar({ onProfile }) {
 
   // Capitaliza el rol para mostrarlo bonito
   const displayRole = user?.role
-    ? user.role.replace("_", " ").toLowerCase().replace(/\b\w/g, l => l.toUpperCase())
+    ? user.role
+        .replace("_", " ")
+        .toLowerCase()
+        .replace(/\b\w/g, (l) => l.toUpperCase())
     : "Sin rol";
 
   return (
-    <aside className="w-72 min-h-screen flex flex-col bg-white border-r">
+    <aside className={styles.sidebar}>
       {/* Header con info de usuario */}
       <div className="h-40 flex flex-col items-center justify-center bg-orange-500 text-white">
         <div className="w-16 h-16 flex items-center justify-center rounded-full bg-white/20 mb-2">
           <User className="h-8 w-8" />
         </div>
-        <h2 className="font-semibold">{user?.email || "Invitado"}</h2>
+        <h2 className="font-semibold">{user?.name || "Invitado"}</h2>
         <span className="text-sm opacity-80">{displayRole}</span>
       </div>
 
       {/* Secciones dinámicas */}
-      <nav className="flex-1 px-4 py-6 space-y-1">
+      <nav className={styles.sidebarNav}>
         {sections.map(({ name, href, icon: Icon }) => (
           <Link
             key={name}
