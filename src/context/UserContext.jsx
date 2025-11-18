@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback  } from "react";
 import { useRouter } from "next/navigation";
 import jwtDecode from "jwt-decode";
 
@@ -36,7 +36,7 @@ export function UserProvider({ children }) {
   };
 
   // Wrapper para fetch con refresh automático
-  const fetchWithAuth = async (url, options = {}) => {
+  const fetchWithAuth = useCallback(async (url, options = {}) => {
     let token = sessionStorage.getItem("access_token");
 
     // Revisar expiración del token
@@ -60,7 +60,7 @@ export function UserProvider({ children }) {
     };
 
     return fetch(url, { ...options, headers, credentials: "include" });
-  };
+  });
 
   // Obtener info del usuario
   const fetchUser = async () => {

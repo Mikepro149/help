@@ -30,10 +30,10 @@ export default function TicketsClient({ role }) {
   // --- Estados para paginación del servidor ---
   const [totalItems, setTotalItems] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
-  
+
   // 2. Obtén la función 'fetchWithAuth' de tu contexto
   // Esta función ya maneja el accessToken y el refresh automático
-  const { fetchWithAuth } = useUser() 
+  const { fetchWithAuth } = useUser()
 
   useEffect(() => {
     // 3. Verifica si el contexto está listo
@@ -46,7 +46,7 @@ export default function TicketsClient({ role }) {
     const fetchTickets = async () => {
       setLoading(true)
       setError(null)
-      
+
       try {
         // 1. Construir Query Params (basado en tu FilterTicketDto de Nest)
         const params = new URLSearchParams()
@@ -83,12 +83,13 @@ export default function TicketsClient({ role }) {
         }
 
         // 4. Procesar la respuesta
-        const result = await response.json() 
+        // 4. Procesar la respuesta
+        const result = await response.json()
 
-        if (result && Array.isArray(result.items)) {
-          updateData(result.items)      // Actualiza los datos de la tabla
-          setTotalItems(result.total)   // Actualiza el total de items
-          setTotalPages(result.totalPages) // Actualiza el total de páginas
+        if (result && Array.isArray(result.data)) {
+          updateData(result.data)           // Era result.items
+          setTotalItems(result.meta.total)  // Era result.total
+          setTotalPages(result.meta.totalPages) // Era result.totalPages
         } else {
           throw new Error("Formato de respuesta inesperado de la API.")
         }
@@ -101,15 +102,16 @@ export default function TicketsClient({ role }) {
       }
     }
 
+    console.log('useEffect ejecutado', { currentPage, itemsPerPage, filters, fetchWithAuth });
+
     fetchTickets()
 
   }, [
-    currentPage, 
-    itemsPerPage, 
-    filters, 
-    updateData, 
-    fetchWithAuth // 4. 'fetchWithAuth' es ahora la dependencia de autenticación
-  ]) 
+    currentPage,
+    itemsPerPage,
+    filters,
+    updateData,// 4. 'fetchWithAuth' es ahora la dependencia de autenticación
+  ])
 
   const filterConfig = getFilterConfig("tickets", role)
   const columns = getTicketColumns(role)
@@ -129,11 +131,11 @@ export default function TicketsClient({ role }) {
       />
 
       {loading && <div className="text-center py-4">Cargando tickets...</div>}
-      
+
       {error && <div className="text-center py-4 text-red-600">{error}</div>}
 
       {!loading && !error && data.length === 0 && (
-         <div className="text-center py-4">No se encontraron tickets.</div>
+        <div className="text-center py-4">No se encontraron tickets.</div>
       )}
 
       {!loading && !error && data.length > 0 && (

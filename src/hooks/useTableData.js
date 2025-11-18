@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react"
+import { useState, useMemo, useCallback } from "react"
 
 export function useTableData(initialData = [], initialItemsPerPage = 10) {
   const [data, setData] = useState(initialData)
@@ -43,7 +43,7 @@ export function useTableData(initialData = [], initialItemsPerPage = 10) {
   // Calcular paginación
   const totalItems = filteredData.length
   const totalPages = Math.ceil(totalItems / itemsPerPage)
-  
+
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage
     const endIndex = startIndex + itemsPerPage
@@ -76,23 +76,23 @@ export function useTableData(initialData = [], initialItemsPerPage = 10) {
     setCurrentPage(1)
   }
 
-  const updateData = (newData) => {
+  const updateData = useCallback((newData) => {
     setData(newData)
     setCurrentPage(1)
-  }
+  }, [])
 
   return {
     // Data
     data: paginatedData,
     allData: filteredData,
     rawData: data,
-    
+
     // Filters
     filters,
     handleFilterChange,
     handleSearch,
     resetFilters,
-    
+
     // Pagination
     currentPage,
     totalPages,
@@ -100,7 +100,7 @@ export function useTableData(initialData = [], initialItemsPerPage = 10) {
     itemsPerPage,
     handlePageChange,
     handleItemsPerPageChange,
-    
+
     // Utils
     updateData,
     setData,
