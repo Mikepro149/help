@@ -52,7 +52,7 @@ export default function InicioAdmin() {
       
       {/* Cartas */}
       <div style={{
-        maxWidth: "900px",
+        maxWidth: "1000px",
         margin: "30px auto 0 auto",
         display: "flex",
         flexWrap: "wrap",
@@ -64,13 +64,13 @@ export default function InicioAdmin() {
           { icon: <FaTicketAlt size={48} color="#000" />, title: "Total de tickets activos", value: 10 },
           { icon: <FaHistory size={48} color="#000" />, title: "Historial de tickets", value: 50 },
           { icon: <FaBell size={48} color="#000" />, title: "Tickets Urgentes", value: 5 },
-          { icon: <FaUsers size={48} color="#000" />, title: "Registrar Clientes", value: "" },
+          { icon: <FaUsers size={48} color="#000" />, title: "Registrar Clientes", value: 0 },
         ].map((card, idx) => (
           <div key={idx} style={{
             background: "#FFB966",
             borderRadius: "15px",
-            width: "300px", // Aumentado de 210px a 250px
-            height: "250px", // Aumentado de 170px a 200px
+            width: "210px", // Aumentado de 210px a 250px
+            height: "300px", // Aumentado de 170px a 200px
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -99,7 +99,7 @@ export default function InicioAdmin() {
 
       {/* Mensajes de tickets */}
       <div style={{
-        maxWidth: "450px", // Hacemos el contenedor más estrecho
+        maxWidth: "1030px", // Hacemos el contenedor más estrecho
         margin: "10px auto 0", //Configurar de acuerdo a la ventana
         background: "#fff",
         borderRadius: "12px",
@@ -115,7 +115,7 @@ export default function InicioAdmin() {
         }}>Mensajes de tickets</h2>
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
-            <tr style={{ background: "#FFB966", color: "#fff", fontWeight: "bold" }}>
+            <tr style={{ background: "#FFB966", color: "rgba(0, 0, 0, 0.99)", fontWeight: "bold" }}>
               <th style={{ padding: "8px", borderRadius: "7px 0 0 0", fontSize: "14px" }}>Nro de ticket</th>
               <th style={{ padding: "8px", fontSize: "14px" }}>Mensaje</th>
               <th style={{ padding: "8px", borderRadius: "0 7px 0 0", fontSize: "14px" }}>Tiempo</th>
@@ -124,12 +124,12 @@ export default function InicioAdmin() {
           <tbody>
             <tr style={{ background: "#fff" }}>
               <td style={{ padding: "8px", textAlign: "center", fontSize: "12px" }}>INC001</td>
-              <td style={{ padding: "8px", fontSize: "12px" }}>¿Cuándo se resuelve el problema de red?</td>
+              <td style={{ padding: "8px", textAlign: "center", fontSize: "12px" }}>¿Cuándo se resuelve el problema de red?</td>
               <td style={{ padding: "8px", textAlign: "center", fontSize: "12px" }}>hace 20 min.</td>
             </tr>
             <tr style={{ background: "#fff" }}>
               <td style={{ padding: "8px", textAlign: "center", fontSize: "12px" }}>INC002</td>
-              <td style={{ padding: "8px", fontSize: "12px" }}>Ya se actualizó el software solicitado.</td>
+              <td style={{ padding: "8px", textAlign: "center", fontSize: "12px" }}>Ya se actualizó el software solicitado.</td>
               <td style={{ padding: "8px", textAlign: "center", fontSize: "12px" }}>hace 30 min.</td>
             </tr>
             <tr style={{ background: "#fff" }}>

@@ -56,7 +56,7 @@ const columns = [
   { accessorKey: "fecha", header: "Fecha de registro" },
   { accessorKey: "prioridad", header: "Prioridad" },
   {
-    id: "chat",
+    id: "chat", // falta ver el enlazar una visual del chat de este ticket................................
     header: "Chat",
     cell: ({ row }) => (
       <Button size="sm" variant="ghost" onClick={() => alert(`Abrir chat de ${row.id}`)}>

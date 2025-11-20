@@ -27,7 +27,7 @@ export default function ModalPersona({
   };
 
   return (
-    <>
+    <>  
       {/* ---------- MODAL PERSONA ---------- */}
       <DialogCn
         open={openPersona}
